@@ -6,14 +6,27 @@ namespace fNbt {
     /// <summary> A tag containing an array of signed 64-bit integers. </summary>
     public sealed class NbtLongArray : NbtTag {
         /// <summary> Type of this tag (LongArray). </summary>
-        public override NbtTagType TagType => NbtTagType.LongArray;
+        public override NbtTagType TagType
+        {
+            get
+            {
+                return NbtTagType.LongArray;
+            }
+        }
 
         /// <summary> Value/payload of this tag (an array of signed 64-bit integers). Value is stored as-is and is NOT cloned. May not be <c>null</c>. </summary>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
         public long[] Value
         {
-            get => longs;
-            set => longs = value ?? throw new ArgumentNullException("value");
+            get { return longs; }
+            set
+            {
+                if (value == null) {
+                    throw new ArgumentNullException("value");
+                }
+
+                longs = value;
+            }
         }
 
         [NotNull]
@@ -71,8 +84,8 @@ namespace fNbt {
         /// <exception cref="IndexOutOfRangeException"> <paramref name="index"/> is outside the array bounds. </exception>
         public new long this[int index]
         {
-            get => Value[index];
-            set => Value[index] = value;
+            get { return Value[index]; }
+            set { Value[index] = value; }
         }
 
 
