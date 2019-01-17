@@ -66,9 +66,9 @@ namespace fNbt {
 
 
         /// <summary> Gets or sets a long at the given index. </summary>
-        /// <param name="tagIndex"> The zero-based index of the element to get or set. </param>
+        /// <param name="index"> The zero-based index of the element to get or set. </param>
         /// <returns> The long at the specified index. </returns>
-        /// <exception cref="IndexOutOfRangeException"> <paramref name="tagIndex"/> is outside the array bounds. </exception>
+        /// <exception cref="IndexOutOfRangeException"> <paramref name="index"/> is outside the array bounds. </exception>
         public new long this[int index]
         {
             get => Value[index];
