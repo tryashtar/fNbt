@@ -83,7 +83,7 @@ namespace fNbt {
         internal abstract void WriteTag([NotNull] NbtBinaryWriter writeReader);
 
         // WriteData does not write the tag's ID byte or the name
-        internal abstract void WriteData([NotNull] NbtBinaryWriter writeReader);
+        internal abstract void WriteData([NotNull] NbtBinaryWriter writeStream);
 
 
         #region Shortcuts
@@ -250,6 +250,21 @@ namespace fNbt {
                     return ((NbtIntArray)this).Value;
                 } else {
                     throw new InvalidCastException("Cannot get IntArrayValue from " + GetCanonicalTagName(TagType));
+                }
+            }
+        }
+
+        /// <summary> Returns the value of this tag, cast as a long array.
+        /// Only supported by NbtLongArray tags. </summary>
+        /// <exception cref="InvalidCastException"> When used on a tag other than NbtLongArray. </exception>
+        public long[] LongArrayValue
+        {
+            get
+            {
+                if (TagType == NbtTagType.LongArray) {
+                    return ((NbtLongArray)this).Value;
+                } else {
+                    throw new InvalidCastException("Cannot get LongArrayValue from " + GetCanonicalTagName(TagType));
                 }
             }
         }

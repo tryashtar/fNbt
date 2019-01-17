@@ -633,6 +633,14 @@ namespace fNbt {
                         ints[i] = reader.ReadInt32();
                     }
                     return new NbtIntArray(TagName, ints);
+                
+                case NbtTagType.LongArray:
+                    var longs = new long[TagLength];
+                    for (int i = 0; i < TagLength; i++) {
+                        longs[i] = reader.ReadInt64();
+                    }
+                    
+                    return new NbtLongArray(TagName, longs);
 
                 default:
                     throw new InvalidOperationException(NonValueTagError);
