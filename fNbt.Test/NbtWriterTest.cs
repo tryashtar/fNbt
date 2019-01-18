@@ -23,6 +23,7 @@ namespace fNbt.Test {
                     writer.WriteDouble("double", 6d);
                     writer.WriteByteArray("byteArray", new byte[] { 10, 11, 12 });
                     writer.WriteIntArray("intArray", new[] { 20, 21, 22 });
+                    writer.WriteLongArray("longArray", new long[] { 200, 210, 220 });
                     writer.WriteString("string", "123");
                 }
                 Assert.IsFalse(writer.IsDone);
