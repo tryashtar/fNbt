@@ -468,6 +468,7 @@ namespace fNbt.Test {
                 Assert.Throws<NbtFormatException>(() => writer.WriteTag(new NbtString("value")));
                 Assert.Throws<NbtFormatException>(() => writer.WriteTag(new NbtByteArray(new byte[0])));
                 Assert.Throws<NbtFormatException>(() => writer.WriteTag(new NbtIntArray(new int[0])));
+                Assert.Throws<NbtFormatException>(() => writer.WriteTag(new NbtLongArray(new long[0])));
                 Assert.Throws<NbtFormatException>(() => writer.WriteTag(new NbtList(NbtTagType.Byte)));
                 Assert.Throws<NbtFormatException>(() => writer.WriteTag(new NbtCompound()));
             }
