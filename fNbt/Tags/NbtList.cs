@@ -356,7 +356,7 @@ namespace fNbt {
 
         internal override void WriteData(NbtBinaryWriter writeStream) {
             if (ListType == NbtTagType.Unknown) {
-                throw new NbtFormatException("NbtList had no elements and an Unknown ListType");
+                ListType = NbtTagType.End;   
             }
             writeStream.Write(ListType);
             writeStream.Write(tags.Count);
