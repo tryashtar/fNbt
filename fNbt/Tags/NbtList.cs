@@ -424,6 +424,8 @@ namespace fNbt {
             NbtTag tag = this[index];
             tags.RemoveAt(index);
             tag.Parent = null;
+            if (tags.Count == 0)
+               listType = NbtTagType.Unknown;
         }
 
 
@@ -459,6 +461,7 @@ namespace fNbt {
                 tags[i].Parent = null;
             }
             tags.Clear();
+            listType = NbtTagType.Unknown;
         }
 
 
@@ -496,6 +499,8 @@ namespace fNbt {
                 return false;
             }
             tag.Parent = null;
+            if (tags.Count == 0)
+               listType = NbtTagType.Unknown;
             return true;
         }
 
