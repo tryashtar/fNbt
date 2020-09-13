@@ -404,15 +404,13 @@ namespace fNbt {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
             }
-            if (listType != NbtTagType.Unknown && newTag.TagType != listType) {
+            if (tags.Count > 0 && listType != NbtTagType.Unknown && newTag.TagType != listType) {
                 throw new ArgumentException("Items must be of type " + listType);
             } else if (newTag.Parent != null) {
                 throw new ArgumentException("A tag may only be added to one compound/list at a time.");
             }
             tags.Insert(tagIndex, newTag);
-            if (listType == NbtTagType.Unknown) {
-                listType = newTag.TagType;
-            }
+            listType = newTag.TagType;
             newTag.Parent = this;
         }
 
@@ -443,15 +441,13 @@ namespace fNbt {
             } else if (newTag.Name != null) {
                 throw new ArgumentException("Named tag given. A list may only contain unnamed tags.");
             }
-            if (listType != NbtTagType.Unknown && newTag.TagType != listType) {
+            if (tags.Count > 0 && listType != NbtTagType.Unknown && newTag.TagType != listType) {
                 throw new ArgumentException("Items in this list must be of type " + listType + ". Given type: " +
                                             newTag.TagType);
             }
             tags.Add(newTag);
             newTag.Parent = this;
-            if (listType == NbtTagType.Unknown) {
-                listType = newTag.TagType;
-            }
+            listType = newTag.TagType;
         }
 
 
