@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
@@ -13,7 +15,7 @@ namespace fNbt {
             get { return NbtTagType.Compound; }
         }
 
-        readonly Dictionary<string, NbtTag> tags = new Dictionary<string, NbtTag>();
+        readonly OrderedDictionary tags = new OrderedDictionary();
 
 
         /// <summary> Creates an empty unnamed NbtByte tag. </summary>
@@ -97,9 +99,8 @@ namespace fNbt {
         [CanBeNull]
         public T Get<T>([NotNull] string tagName) where T : NbtTag {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            NbtTag result;
-            if (tags.TryGetValue(tagName, out result)) {
-                return (T)result;
+            if (tags.Contains(tagName)) {
+                return (T)tags[tagName];
             }
             return null;
         }
@@ -113,9 +114,8 @@ namespace fNbt {
         [CanBeNull]
         public NbtTag Get([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            NbtTag result;
-            if (tags.TryGetValue(tagName, out result)) {
-                return result;
+            if (tags.Contains(tagName)) {
+                return (NbtTag)tags[tagName];
             }
             return null;
         }
@@ -131,9 +131,8 @@ namespace fNbt {
         /// <exception cref="InvalidCastException"> If tag could not be cast to the desired tag. </exception>
         public bool TryGet<T>([NotNull] string tagName, out T result) where T : NbtTag {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            NbtTag tempResult;
-            if (tags.TryGetValue(tagName, out tempResult)) {
-                result = (T)tempResult;
+            if (tags.Contains(tagName)) {
+                result = (T)tags[tagName];
                 return true;
             } else {
                 result = null;
@@ -151,9 +150,8 @@ namespace fNbt {
         /// <exception cref="InvalidCastException"> If tag could not be cast to the desired tag. </exception>
         public bool TryGet([NotNull] string tagName, out NbtTag result) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            NbtTag tempResult;
-            if (tags.TryGetValue(tagName, out tempResult)) {
-                result = tempResult;
+            if (tags.Contains(tagName)) {
+                result = (NbtTag)tags[tagName];
                 return true;
             } else {
                 result = null;
@@ -182,7 +180,7 @@ namespace fNbt {
         [Pure]
         public bool Contains([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            return tags.ContainsKey(tagName);
+            return tags.Contains(tagName);
         }
 
 
@@ -193,10 +191,10 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="tagName"/> is <c>null</c>. </exception>
         public bool Remove([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            NbtTag tag;
-            if (!tags.TryGetValue(tagName, out tag)) {
+            if (!tags.Contains(tagName)) {
                 return false;
             }
+            var tag = (NbtTag)tags[tagName];
             tags.Remove(tagName);
             tag.Parent = null;
             return true;
@@ -207,28 +205,42 @@ namespace fNbt {
             Debug.Assert(oldName != null);
             Debug.Assert(newName != null);
             Debug.Assert(newName != oldName);
-            NbtTag tag;
-            if (tags.TryGetValue(newName, out tag)) {
+            if (tags.Contains(newName)) {
                 throw new ArgumentException("Cannot rename: a tag with the name already exists in this compound.");
             }
-            if (!tags.TryGetValue(oldName, out tag)) {
+            if (!tags.Contains(oldName)) {
                 throw new ArgumentException("Cannot rename: no tag found to rename.");
             }
+            var tag = (NbtTag)tags[oldName];
+            var index = IndexOf(tag);
             tags.Remove(oldName);
-            tags.Add(newName, tag);
+            tags.Insert(index, newName, tag);
         }
 
+        /// <summary>
+        /// Returns the index of the provided tag
+        /// </summary>
+        /// <param name="tag">The tag to search for</param>
+        /// <returns>The index of the provided tag in this compound, or -1 if it does not contain it</returns>
+        public int IndexOf(NbtTag tag) {
+            for (int i = 0; i < tags.Count; i++)
+            {
+                if (tags[i] == tag)
+                    return i;
+            }
+            return -1;
+        }
 
         /// <summary> Gets a collection containing all tag names in this NbtCompound. </summary>
         [NotNull]
         public IEnumerable<string> Names {
-            get { return tags.Keys; }
+            get { return tags.Keys.Cast<string>(); }
         }
 
         /// <summary> Gets a collection containing all tags in this NbtCompound. </summary>
         [NotNull]
         public IEnumerable<NbtTag> Tags {
-            get { return tags.Values; }
+            get { return tags.Values.Cast<NbtTag>(); }
         }
 
 
@@ -398,7 +410,7 @@ namespace fNbt {
         /// <summary> Returns an enumerator that iterates through all tags in this NbtCompound. </summary>
         /// <returns> An IEnumerator&gt;NbtTag&lt; that can be used to iterate through the collection. </returns>
         public IEnumerator<NbtTag> GetEnumerator() {
-            return tags.Values.GetEnumerator();
+            return tags.Values.Cast<NbtTag>().GetEnumerator();
         }
 
 
@@ -430,6 +442,27 @@ namespace fNbt {
             newTag.Parent = this;
         }
 
+        /// <summary> Inserts a tag into this NbtCompound. </summary>
+        /// <param name="index"> The index to which the tag should be added. </param>
+        /// <param name="newTag"> The object to add to this NbtCompound. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
+        /// <exception cref="ArgumentException"> If the given tag is unnamed;
+        /// or if a tag with the given name already exists in this NbtCompound. </exception>
+        public void Insert(int index, [NotNull] NbtTag newTag)
+        {
+            if (newTag == null) {
+                throw new ArgumentNullException("newTag");
+            } else if (newTag == this) {
+                throw new ArgumentException("Cannot add tag to self");
+            } else if (newTag.Name == null) {
+                throw new ArgumentException("Only named tags are allowed in compound tags.");
+            } else if (newTag.Parent != null) {
+                throw new ArgumentException("A tag may only be added to one compound/list at a time.");
+            }
+            tags.Insert(index, newTag.Name, newTag);
+            newTag.Parent = this;
+        }
+
 
         /// <summary> Removes all tags from this NbtCompound. </summary>
         public void Clear() {
@@ -448,7 +481,7 @@ namespace fNbt {
         [Pure]
         public bool Contains([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
-            return tags.ContainsValue(tag);
+            return tags.Contains(tag);
         }
 
 
@@ -476,9 +509,10 @@ namespace fNbt {
         public bool Remove([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (tag.Name == null) throw new ArgumentException("Trying to remove an unnamed tag.");
-            NbtTag maybeItem;
-            if (tags.TryGetValue(tag.Name, out maybeItem)) {
-                if (maybeItem == tag && tags.Remove(tag.Name)) {
+            if (tags.Contains(tag.Name)) {
+                var maybeItem = (NbtTag)tags[tag.Name];
+                if (maybeItem == tag) {
+                    tags.Remove(tag.Name);
                     tag.Parent = null;
                     return true;
                 }
