@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -223,8 +223,7 @@ namespace fNbt {
         /// <param name="tag">The tag to search for</param>
         /// <returns>The index of the provided tag in this compound, or -1 if it does not contain it</returns>
         public int IndexOf(NbtTag tag) {
-            for (int i = 0; i < tags.Count; i++)
-            {
+            for (int i = 0; i < tags.Count; i++) {
                 if (tags[i] == tag)
                     return i;
             }

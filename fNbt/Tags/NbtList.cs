@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -169,6 +169,7 @@ namespace fNbt {
                 if (listType != NbtTagType.Unknown && value.TagType != listType) {
                     throw new ArgumentException("Items must be of type " + listType);
                 }
+                tags[tagIndex].Parent = null;
                 tags[tagIndex] = value;
                 value.Parent = this;
             }
