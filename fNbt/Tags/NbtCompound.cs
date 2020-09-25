@@ -481,7 +481,11 @@ namespace fNbt {
         public bool Contains([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (tag.Name == null) return false;
-            return tags.Contains(tag.Name);
+            if (tags.Contains(tag.Name)) {
+                var existing = tags[tag.Name];
+                return existing == tag;
+            }
+            return false;
         }
 
 
