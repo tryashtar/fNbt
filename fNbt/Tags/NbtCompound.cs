@@ -89,7 +89,7 @@ namespace fNbt {
             }
         }
 
-        public NbtTag this[int index] {
+        public override NbtTag this[int index] {
             get { return (NbtTag)tags[index]; }
             set { this[value.Name] = value; }
         }
