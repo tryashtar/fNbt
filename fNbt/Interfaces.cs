@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace fNbt
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public interface INbtTag
     {
         string Name { get; set; }
@@ -23,6 +24,7 @@ namespace fNbt
         bool Contains(NbtTag tag);
         bool Remove(NbtTag tag);
         int IndexOf(NbtTag tag);
+        INbtTag this[int tagIndex] { get; }
     }
 
     public interface INbtByte : INbtTag
@@ -87,4 +89,5 @@ namespace fNbt
     {
         NbtTagType ListType { get; }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

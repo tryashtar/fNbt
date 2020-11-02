@@ -89,6 +89,13 @@ namespace fNbt {
             }
         }
 
+        public NbtTag this[int index] {
+            get { return (NbtTag)tags[index]; }
+            set { this[value.Name] = value; }
+        }
+
+        INbtTag INbtContainer.this[int index] => this[index];
+
 
         /// <summary> Gets the tag with the specified name. May return <c>null</c>. </summary>
         /// <param name="tagName"> The name of the tag to get. </param>

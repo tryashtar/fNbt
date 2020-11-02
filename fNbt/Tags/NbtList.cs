@@ -176,6 +176,7 @@ namespace fNbt {
         }
 
         INbtTag IReadOnlyList<INbtTag>.this[int index] => this[index];
+        INbtTag INbtContainer.this[int index] => this[index];
 
         /// <summary> Gets or sets the tag with the specified name. </summary>
         /// <param name="tagIndex"> The zero-based index of the tag to get or set. </param>
