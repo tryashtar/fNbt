@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a double-precision floating point number. </summary>
-    public sealed class NbtDouble : NbtTag {
+    public sealed class NbtDouble : NbtTag, INbtDouble {
         /// <summary> Type of this tag (Double). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Double; }

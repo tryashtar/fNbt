@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a set of other named tags. Order is not guaranteed. </summary>
-    public sealed class NbtCompound : NbtTag, ICollection<NbtTag>, ICollection {
+    public sealed class NbtCompound : NbtTag, INbtCompound, ICollection<NbtTag>, ICollection {
         /// <summary> Type of this tag (Compound). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Compound; }
@@ -159,6 +159,7 @@ namespace fNbt {
             }
         }
 
+        public bool CanAdd(NbtTagType type) => true;
 
         /// <summary> Adds all tags from the specified collection to this NbtCompound. </summary>
         /// <param name="newTags"> The collection whose elements should be added to this NbtCompound. </param>
@@ -230,6 +231,14 @@ namespace fNbt {
             return -1;
         }
 
+        public int IndexOf(string name) {
+            for (int i = 0; i < tags.Count; i++) {
+                if (((NbtTag)tags[i]).Name == name)
+                    return i;
+            }
+            return -1;
+        }
+
         /// <summary> Gets a collection containing all tag names in this NbtCompound. </summary>
         [NotNull]
         public IEnumerable<string> Names {
@@ -241,6 +250,8 @@ namespace fNbt {
         public IEnumerable<NbtTag> Tags {
             get { return tags.Values.Cast<NbtTag>(); }
         }
+
+        IEnumerable<INbtTag> INbtCompound.Tags => Tags;
 
 
         #region Reading / Writing
@@ -412,10 +423,10 @@ namespace fNbt {
             return tags.Values.Cast<NbtTag>().GetEnumerator();
         }
 
-
         IEnumerator IEnumerable.GetEnumerator() {
             return tags.Values.GetEnumerator();
         }
+        IEnumerator<INbtTag> IEnumerable<INbtTag>.GetEnumerator() => GetEnumerator();
 
         #endregion
 

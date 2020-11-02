@@ -64,6 +64,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="ByteCountingStream.cs" />
+    <Compile Include="Interfaces.cs" />
     <Compile Include="InvalidReaderStateException.cs" />
     <Compile Include="JetBrains.Annotations.cs" />
     <Compile Include="NbtCompression.cs" />

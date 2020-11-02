@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of bytes. </summary>
-    public sealed class NbtByteArray : NbtTag {
+    public sealed class NbtByteArray : NbtTag, INbtByteArray {
         static readonly byte[] ZeroArray = new byte[0];
 
         /// <summary> Type of this tag (ByteArray). </summary>

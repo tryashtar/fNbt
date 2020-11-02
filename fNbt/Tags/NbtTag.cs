@@ -5,11 +5,12 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> Base class for different kinds of named binary tags. </summary>
-    public abstract class NbtTag : ICloneable {
+    public abstract class NbtTag : INbtTag, ICloneable {
         /// <summary> Parent compound tag, either NbtList or NbtCompound, if any.
         /// May be <c>null</c> for detached tags. </summary>
         [CanBeNull]
         public NbtTag Parent { get; internal set; }
+        INbtContainer INbtTag.Parent => Parent as INbtContainer;
 
         /// <summary> Type of this tag. </summary>
         public abstract NbtTagType TagType { get; }

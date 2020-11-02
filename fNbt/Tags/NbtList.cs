@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a list of unnamed tags, all of the same kind. </summary>
-    public sealed class NbtList : NbtTag, IList<NbtTag>, IList {
+    public sealed class NbtList : NbtTag, INbtList, IList<NbtTag>, IList {
         /// <summary> Type of this tag (List). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.List; }
@@ -175,6 +175,7 @@ namespace fNbt {
             }
         }
 
+        INbtTag IReadOnlyList<INbtTag>.this[int index] => this[index];
 
         /// <summary> Gets or sets the tag with the specified name. </summary>
         /// <param name="tagIndex"> The zero-based index of the tag to get or set. </param>
@@ -188,6 +189,9 @@ namespace fNbt {
             return (T)tags[tagIndex];
         }
 
+        public bool CanAdd(NbtTagType type) {
+            return tags.Count == 0 || type == listType;
+        }
 
         /// <summary> Adds all tags from the specified collection to the end of this NbtList. </summary>
         /// <param name="newTags"> The collection whose elements should be added to this NbtList. </param>
@@ -381,6 +385,8 @@ namespace fNbt {
         IEnumerator IEnumerable.GetEnumerator() {
             return tags.GetEnumerator();
         }
+
+        IEnumerator<INbtTag> IEnumerable<INbtTag>.GetEnumerator() => GetEnumerator();
 
         #endregion
 

@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a single string. String is stored in UTF-8 encoding. </summary>
-    public sealed class NbtString : NbtTag {
+    public sealed class NbtString : NbtTag, INbtString {
         /// <summary> Type of this tag (String). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.String; }
