@@ -31,6 +31,8 @@ namespace fNbt {
             }
         }
 
+        public NbtTag Unwrap() => this;
+
         /// <summary> Name of this tag. Immutable, and set by the constructor. May be <c>null</c>. </summary>
         /// <exception cref="ArgumentNullException"> If <paramref name="value"/> is <c>null</c>, and <c>Parent</c> tag is an NbtCompound.
         /// Name of tags inside an <c>NbtCompound</c> may not be null. </exception>

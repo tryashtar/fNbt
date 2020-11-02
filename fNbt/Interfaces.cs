@@ -12,6 +12,7 @@ namespace fNbt
         string Name { get; set; }
         NbtTagType TagType { get; }
         INbtContainer Parent { get; }
+        NbtTag Unwrap();
     }
 
     public interface INbtContainer : INbtTag, IReadOnlyCollection<INbtTag>
