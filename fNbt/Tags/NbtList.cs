@@ -190,6 +190,9 @@ namespace fNbt {
             return (T)tags[tagIndex];
         }
 
+        /// <summary> Whether a tag of the specified type can be added to this NbtList. </summary>
+        /// <param name="type"> The type to check. </param>
+        /// <returns> Whether the type is valid in this NbtList. </returns>
         public bool CanAdd(NbtTagType type) {
             return tags.Count == 0 || type == listType;
         }

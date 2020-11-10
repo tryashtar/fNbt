@@ -31,6 +31,8 @@ namespace fNbt {
             }
         }
 
+        /// <summary> This is a creepy hack used to extract an NbtTag from an INbtTag. </summary>
+        /// <returns> Itself. </returns>
         public NbtTag Unwrap() => this;
 
         /// <summary> Name of this tag. Immutable, and set by the constructor. May be <c>null</c>. </summary>
@@ -108,8 +110,8 @@ namespace fNbt {
         /// <exception cref="ArgumentOutOfRangeException"> tagIndex is not a valid index in this tag. </exception>
         /// <exception cref="ArgumentNullException"> Given tag is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> Given tag's type does not match ListType. </exception>
-        /// <exception cref="InvalidOperationException"> If used on a tag that is not NbtList, NbtByteArray, or NbtIntArray. </exception>
-        /// <remarks> ONLY APPLICABLE TO NbtList, NbtByteArray, and NbtIntArray OBJECTS!
+        /// <exception cref="InvalidOperationException"> If used on a tag that is not NbtList or NbtCompound. </exception>
+        /// <remarks> ONLY APPLICABLE TO NbtList, and NbtCompound OBJECTS!
         /// Included in NbtTag base class for programmers' convenience, to avoid extra type casts. </remarks>
         public virtual NbtTag this[int tagIndex] {
             get { throw new InvalidOperationException("Integer indexers only work on NbtList tags."); }

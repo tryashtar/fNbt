@@ -89,9 +89,15 @@ namespace fNbt {
             }
         }
 
-        public override NbtTag this[int index] {
-            get { return (NbtTag)tags[index]; }
-            set { this[value.Name] = value; }
+        /// <summary> Gets or sets the tag at the specified index. </summary>
+        /// <returns> The tag at the specified index. </returns>
+        /// <param name="tagIndex"> The zero-based index of the tag to get or set. </param>
+        /// <exception cref="ArgumentOutOfRangeException"> <paramref name="tagIndex"/> is not a valid index in the NbtList. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
+        [NotNull]
+        public override NbtTag this[int tagIndex] {
+            get { return (NbtTag)tags[tagIndex]; }
+            set { tags.RemoveAt(tagIndex); this[value.Name] = value; }
         }
 
         INbtTag INbtContainer.this[int index] => this[index];
@@ -166,6 +172,9 @@ namespace fNbt {
             }
         }
 
+        /// <summary> Whether a tag of the specified type can be added to this NbtCompound (always true). </summary>
+        /// <param name="type"> The type to check. </param>
+        /// <returns> Whether the type is valid in this NbtCompound. </returns>
         public bool CanAdd(NbtTagType type) => true;
 
         /// <summary> Adds all tags from the specified collection to this NbtCompound. </summary>
@@ -238,6 +247,11 @@ namespace fNbt {
             return -1;
         }
 
+        /// <summary>
+        /// Returns the index of the provided tag, by name
+        /// </summary>
+        /// <param name="name">The name to search for</param>
+        /// <returns>The index of a provided tag in this compound with this name, or -1 if it does not contain it</returns>
         public int IndexOf(string name) {
             for (int i = 0; i < tags.Count; i++) {
                 if (((NbtTag)tags[i]).Name == name)
