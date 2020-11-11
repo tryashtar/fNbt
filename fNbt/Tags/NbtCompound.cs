@@ -89,6 +89,8 @@ namespace fNbt {
             }
         }
 
+        INbtTag INbtCompound.this[string tagName] => this[tagName];
+
         /// <summary> Gets or sets the tag at the specified index. </summary>
         /// <returns> The tag at the specified index. </returns>
         /// <param name="tagIndex"> The zero-based index of the tag to get or set. </param>

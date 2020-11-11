@@ -84,6 +84,7 @@ namespace fNbt
         bool Contains(string name);
         bool Remove(string name);
         int IndexOf(string name);
+        INbtTag this[string name] { get; }
     }
 
     public interface INbtList : INbtContainer, IReadOnlyList<INbtTag>
