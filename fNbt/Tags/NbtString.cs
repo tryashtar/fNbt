@@ -55,7 +55,7 @@ namespace fNbt {
         public NbtString([CanBeNull] string tagName, [NotNull] string value) {
             if (value == null) throw new ArgumentNullException("value");
             name = tagName;
-            Value = value;
+            stringVal = value;
         }
 
 
@@ -65,7 +65,7 @@ namespace fNbt {
         public NbtString([NotNull] NbtString other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            stringVal = other.Value;
         }
 
 
@@ -76,7 +76,7 @@ namespace fNbt {
                 readStream.SkipString();
                 return false;
             }
-            Value = readStream.ReadString();
+            stringVal = readStream.ReadString();
             return true;
         }
 

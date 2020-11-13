@@ -106,8 +106,8 @@ namespace fNbt {
                 readStream.Skip(length);
                 return false;
             }
-            Value = readStream.ReadBytes(length);
-            if (Value.Length < length) {
+            bytes = readStream.ReadBytes(length);
+            if (bytes.Length < length) {
                 throw new EndOfStreamException();
             }
             return true;

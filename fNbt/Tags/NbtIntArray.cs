@@ -108,9 +108,9 @@ namespace fNbt {
                 return false;
             }
 
-            Value = new int[length];
+            ints = new int[length];
             for (int i = 0; i < length; i++) {
-                Value[i] = readStream.ReadInt32();
+                ints[i] = readStream.ReadInt32();
             }
             return true;
         }

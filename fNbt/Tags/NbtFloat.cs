@@ -47,7 +47,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtFloat([CanBeNull] string tagName, float value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -57,7 +57,7 @@ namespace fNbt {
         public NbtFloat([NotNull] NbtFloat other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -66,7 +66,7 @@ namespace fNbt {
                 readStream.ReadSingle();
                 return false;
             }
-            Value = readStream.ReadSingle();
+            _Value = readStream.ReadSingle();
             return true;
         }
 

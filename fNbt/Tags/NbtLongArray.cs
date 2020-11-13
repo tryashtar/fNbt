@@ -110,10 +110,10 @@ namespace fNbt {
                 return false;
             }
 
-            Value = new long[length];
+            longs = new long[length];
 
             for (int i = 0; i < length; i++) {
-                Value[i] = readStream.ReadInt64();
+                longs[i] = readStream.ReadInt64();
             }
 
             return true;

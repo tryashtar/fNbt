@@ -46,7 +46,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtDouble([CanBeNull] string tagName, double value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -56,7 +56,7 @@ namespace fNbt {
         public NbtDouble([NotNull] NbtDouble other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -65,7 +65,7 @@ namespace fNbt {
                 readStream.ReadDouble();
                 return false;
             }
-            Value = readStream.ReadDouble();
+            _Value = readStream.ReadDouble();
             return true;
         }
 

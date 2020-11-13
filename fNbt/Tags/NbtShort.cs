@@ -47,7 +47,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtShort([CanBeNull] string tagName, short value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -57,7 +57,7 @@ namespace fNbt {
         public NbtShort([NotNull] NbtShort other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -68,7 +68,7 @@ namespace fNbt {
                 readStream.ReadInt16();
                 return false;
             }
-            Value = readStream.ReadInt16();
+            _Value = readStream.ReadInt16();
             return true;
         }
 

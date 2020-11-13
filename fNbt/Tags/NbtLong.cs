@@ -11,7 +11,19 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single signed 64-bit integer). </summary>
-        public long Value { get; set; }
+        public long Value
+        {
+            get => _Value;
+            set
+            {
+                long current_value = _Value;
+                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                    () => _Value = value,
+                    () => _Value = current_value
+                );
+            }
+        }
+        private long _Value;
 
 
         /// <summary> Creates an unnamed NbtLong tag with the default value of 0. </summary>
@@ -35,7 +47,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtLong(string tagName, long value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -45,7 +57,7 @@ namespace fNbt {
         public NbtLong([NotNull] NbtLong other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -56,7 +68,7 @@ namespace fNbt {
                 readStream.ReadInt64();
                 return false;
             }
-            Value = readStream.ReadInt64();
+            _Value = readStream.ReadInt64();
             return true;
         }
 

@@ -46,7 +46,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtByte([CanBeNull] string tagName, byte value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -56,7 +56,7 @@ namespace fNbt {
         public NbtByte([NotNull] NbtByte other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -65,7 +65,7 @@ namespace fNbt {
                 readStream.ReadByte();
                 return false;
             }
-            Value = readStream.ReadByte();
+            _Value = readStream.ReadByte();
             return true;
         }
 
