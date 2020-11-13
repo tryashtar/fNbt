@@ -15,7 +15,7 @@ namespace fNbt {
             get { return NbtTagType.Compound; }
         }
 
-        readonly OrderedDictionary tags = new OrderedDictionary();
+        readonly OrderedDictionary<string, NbtTag> tags = new OrderedDictionary<string, NbtTag>();
 
 
         /// <summary> Creates an empty unnamed NbtByte tag. </summary>
@@ -96,7 +96,7 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
         [NotNull]
         public override NbtTag this[int tagIndex] {
-            get { return (NbtTag)tags[tagIndex]; }
+            get { return tags[tagIndex]; }
             set { tags.RemoveAt(tagIndex); this[value.Name] = value; }
         }
 
@@ -109,7 +109,7 @@ namespace fNbt {
         [CanBeNull]
         public T Get<T>([NotNull] string tagName) where T : NbtTag {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (tags.Contains(tagName)) {
+            if (tags.ContainsKey(tagName)) {
                 return (T)tags[tagName];
             }
             return null;
@@ -124,8 +124,8 @@ namespace fNbt {
         [CanBeNull]
         public NbtTag Get([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (tags.Contains(tagName)) {
-                return (NbtTag)tags[tagName];
+            if (tags.ContainsKey(tagName)) {
+                return tags[tagName];
             }
             return null;
         }
@@ -141,7 +141,7 @@ namespace fNbt {
         /// <exception cref="InvalidCastException"> If tag could not be cast to the desired tag. </exception>
         public bool TryGet<T>([NotNull] string tagName, out T result) where T : NbtTag {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (tags.Contains(tagName)) {
+            if (tags.ContainsKey(tagName)) {
                 result = (T)tags[tagName];
                 return true;
             } else {
@@ -160,8 +160,8 @@ namespace fNbt {
         /// <exception cref="InvalidCastException"> If tag could not be cast to the desired tag. </exception>
         public bool TryGet([NotNull] string tagName, out NbtTag result) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (tags.Contains(tagName)) {
-                result = (NbtTag)tags[tagName];
+            if (tags.ContainsKey(tagName)) {
+                result = tags[tagName];
                 return true;
             } else {
                 result = null;
@@ -194,7 +194,7 @@ namespace fNbt {
         [Pure]
         public bool Contains([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            return tags.Contains(tagName);
+            return tags.ContainsKey(tagName);
         }
 
 
@@ -208,7 +208,7 @@ namespace fNbt {
             int index = IndexOf(tagName);
             if (index == -1)
                 return false;
-            var tag = (NbtTag)tags[index];
+            var tag = tags[index];
             return PerformAction(new DescriptionHolder("Remove {0} from {1}", tag, this),
                 () => DoRemove(tagName),
                 () => { DoInsert(index, tag); }
@@ -217,10 +217,10 @@ namespace fNbt {
 
         private bool DoRemove([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (!tags.Contains(tagName)) {
+            if (!tags.ContainsKey(tagName)) {
                 return false;
             }
-            var tag = (NbtTag)tags[tagName];
+            var tag = tags[tagName];
             tags.Remove(tagName);
             tag.Parent = null;
             return true;
@@ -230,7 +230,7 @@ namespace fNbt {
         /// <param name="index"> The zero-based index of the item to remove. </param>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index"/> is not a valid index in the NbtCompound. </exception>
         protected override void DoRemoveAt(int index) {
-            var tag = (NbtTag)tags[index];
+            var tag = tags[index];
             tag.Parent = null;
             tags.RemoveAt(index);
         }
@@ -240,13 +240,13 @@ namespace fNbt {
             Debug.Assert(oldName != null);
             Debug.Assert(newName != null);
             Debug.Assert(newName != oldName);
-            if (tags.Contains(newName)) {
+            if (tags.ContainsKey(newName)) {
                 throw new ArgumentException("Cannot rename: a tag with the name already exists in this compound.");
             }
-            if (!tags.Contains(oldName)) {
+            if (!tags.ContainsKey(oldName)) {
                 throw new ArgumentException("Cannot rename: no tag found to rename.");
             }
-            var tag = (NbtTag)tags[oldName];
+            var tag = tags[oldName];
             var index = IndexOf(tag);
             tags.Remove(oldName);
             tags.Insert(index, newName, tag);
@@ -272,7 +272,7 @@ namespace fNbt {
         /// <returns>The index of a provided tag in this compound with this name, or -1 if it does not contain it</returns>
         public int IndexOf(string name) {
             for (int i = 0; i < tags.Count; i++) {
-                if (((NbtTag)tags[i]).Name == name)
+                if (tags[i].Name == name)
                     return i;
             }
             return -1;
@@ -281,13 +281,13 @@ namespace fNbt {
         /// <summary> Gets a collection containing all tag names in this NbtCompound. </summary>
         [NotNull]
         public IEnumerable<string> Names {
-            get { return tags.Keys.Cast<string>(); }
+            get { return tags.Keys; }
         }
 
         /// <summary> Gets a collection containing all tags in this NbtCompound. </summary>
         [NotNull]
         public IEnumerable<NbtTag> Tags {
-            get { return tags.Values.Cast<NbtTag>(); }
+            get { return tags.Values; }
         }
 
         #region Reading / Writing
@@ -456,7 +456,7 @@ namespace fNbt {
         /// <summary> Returns an enumerator that iterates through all tags in this NbtCompound. </summary>
         /// <returns> An IEnumerator&gt;NbtTag&lt; that can be used to iterate through the collection. </returns>
         public override IEnumerator<NbtTag> GetEnumerator() {
-            return tags.Values.Cast<NbtTag>().GetEnumerator();
+            return tags.Values.GetEnumerator();
         }
 
         #endregion
@@ -523,7 +523,7 @@ namespace fNbt {
         public override bool Contains([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (tag.Name == null) return false;
-            if (tags.Contains(tag.Name)) {
+            if (tags.ContainsKey(tag.Name)) {
                 var existing = tags[tag.Name];
                 return existing == tag;
             }
@@ -555,8 +555,8 @@ namespace fNbt {
         protected override bool DoRemove([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (tag.Name == null) throw new ArgumentException("Trying to remove an unnamed tag.");
-            if (tags.Contains(tag.Name)) {
-                var maybeItem = (NbtTag)tags[tag.Name];
+            if (tags.ContainsKey(tag.Name)) {
+                var maybeItem = tags[tag.Name];
                 if (maybeItem == tag) {
                     tags.Remove(tag.Name);
                     tag.Parent = null;
