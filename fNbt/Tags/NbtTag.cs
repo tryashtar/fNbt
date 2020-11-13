@@ -5,15 +5,46 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> Base class for different kinds of named binary tags. </summary>
-    public abstract class NbtTag : INbtTag, ICloneable {
+    public abstract class NbtTag : ICloneable {
         /// <summary> Parent compound tag, either NbtList or NbtCompound, if any.
         /// May be <c>null</c> for detached tags. </summary>
         [CanBeNull]
         public NbtTag Parent { get; internal set; }
-        INbtContainer INbtTag.Parent => Parent as INbtContainer;
 
         /// <summary> Type of this tag. </summary>
         public abstract NbtTagType TagType { get; }
+
+        /// <summary> Event raised when this tag or one of its children is changed. </summary>
+        public event EventHandler<(NbtTag, UndoableAction)> Changed;
+
+        private void RaiseChanged(NbtTag tag, UndoableAction action) => Changed?.Invoke(this, (tag, action));
+
+        /// <summary> Helper method for signaling changes to parent tags. </summary>
+        protected T PerformChange<T>(DescriptionHolder description, Func<T> action, Action undo)
+        {
+            var tag = this;
+            var undoable = new UndoableAction<T>(description, action, undo);
+            T result = undoable.Do();
+            while (tag != null)
+            {
+                tag.RaiseChanged(this, undoable);
+                tag = tag.Parent;
+            }
+            return result;
+        }
+
+        /// <summary> Helper method for signaling changes to parent tags. </summary>
+        protected void PerformChange(DescriptionHolder description, Action action, Action undo)
+        {
+            var tag = this;
+            var undoable = new UndoableAction(description, action, undo);
+            undoable.Do();
+            while (tag != null)
+            {
+                tag.RaiseChanged(this, undoable);
+                tag = tag.Parent;
+            }
+        }
 
         /// <summary> Returns true if tags of this type have a value attached.
         /// All tags except Compound, List, and End have values. </summary>
@@ -31,10 +62,6 @@ namespace fNbt {
             }
         }
 
-        /// <summary> This is a creepy hack used to extract an NbtTag from an INbtTag. </summary>
-        /// <returns> Itself. </returns>
-        public NbtTag Unwrap() => this;
-
         /// <summary> Name of this tag. Immutable, and set by the constructor. May be <c>null</c>. </summary>
         /// <exception cref="ArgumentNullException"> If <paramref name="value"/> is <c>null</c>, and <c>Parent</c> tag is an NbtCompound.
         /// Name of tags inside an <c>NbtCompound</c> may not be null. </exception>
@@ -43,22 +70,38 @@ namespace fNbt {
         public string Name {
             get { return name; }
             set {
-                if (name == value) {
-                    return;
-                }
+                string current_name = name;
+                PerformChange(new DescriptionHolder("Rename {0} to {1}", this, value),
+                    () => SetName(value),
+                    () => SetName(current_name)
+                );
 
-                var parentAsCompound = Parent as NbtCompound;
-                if (parentAsCompound != null) {
-                    if (value == null) {
-                        throw new ArgumentNullException("value",
-                                                        "Name of tags inside an NbtCompound may not be null.");
-                    } else if (name != null) {
-                        parentAsCompound.RenameTag(name, value);
-                    }
-                }
-
-                name = value;
             }
+        }
+
+        private void SetName(string value)
+        {
+            if (name == value)
+            {
+                return;
+            }
+
+            var parentAsCompound = Parent as NbtCompound;
+            if (parentAsCompound != null)
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value",
+                                                    "Name of tags inside an NbtCompound may not be null.");
+                }
+                else if (name != null)
+                {
+                    string current_name = name;
+                    parentAsCompound.RenameTag(name, value);
+                }
+            }
+
+            name = value;
         }
 
         // Used by impls to bypass setter checks (and avoid side effects) when initializing state
@@ -114,8 +157,8 @@ namespace fNbt {
         /// <remarks> ONLY APPLICABLE TO NbtList, and NbtCompound OBJECTS!
         /// Included in NbtTag base class for programmers' convenience, to avoid extra type casts. </remarks>
         public virtual NbtTag this[int tagIndex] {
-            get { throw new InvalidOperationException("Integer indexers only work on NbtList tags."); }
-            set { throw new InvalidOperationException("Integer indexers only work on NbtList tags."); }
+            get { throw new InvalidOperationException("Integer indexers only work on container tags."); }
+            set { throw new InvalidOperationException("Integer indexers only work on container tags."); }
         }
 
         /// <summary> Returns the value of this tag, cast as a byte.

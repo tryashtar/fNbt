@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a single signed 64-bit integer. </summary>
-    public sealed class NbtLong : NbtTag, INbtLong {
+    public sealed class NbtLong : NbtTag {
         /// <summary> Type of this tag (Long). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Long; }

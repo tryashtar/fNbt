@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a single string. String is stored in UTF-8 encoding. </summary>
-    public sealed class NbtString : NbtTag, INbtString {
+    public sealed class NbtString : NbtTag {
         /// <summary> Type of this tag (String). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.String; }
@@ -14,12 +14,23 @@ namespace fNbt {
         [NotNull]
         public string Value {
             get { return stringVal; }
-            set {
-                if (value == null) {
-                    throw new ArgumentNullException("value");
-                }
-                stringVal = value;
+            set
+            {
+                string current_value = stringVal;
+                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                    () => SetValue(value),
+                    () => SetValue(current_value)
+                );
             }
+        }
+
+        private void SetValue(string value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+            stringVal = value;
         }
 
         [NotNull]

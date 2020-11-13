@@ -4,14 +4,25 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a single byte. </summary>
-    public sealed class NbtByte : NbtTag, INbtByte {
+    public sealed class NbtByte : NbtTag {
         /// <summary> Type of this tag (Byte). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Byte; }
         }
 
         /// <summary> Value/payload of this tag (a single byte). </summary>
-        public byte Value { get; set; }
+        public byte Value
+        {
+            get => _Value;
+            set {
+                byte current_value = _Value;
+                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                    () => _Value = value,
+                    () => _Value = current_value
+                );
+            }
+        }
+        private byte _Value;
 
 
         /// <summary> Creates an unnamed NbtByte tag with the default value of 0. </summary>

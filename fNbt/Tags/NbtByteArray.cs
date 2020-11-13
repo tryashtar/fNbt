@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of bytes. </summary>
-    public sealed class NbtByteArray : NbtTag, INbtByteArray {
+    public sealed class NbtByteArray : NbtTag {
         static readonly byte[] ZeroArray = new byte[0];
 
         /// <summary> Type of this tag (ByteArray). </summary>
@@ -18,12 +18,22 @@ namespace fNbt {
         [NotNull]
         public byte[] Value {
             get { return bytes; }
-            set {
-                if (value == null) {
-                    throw new ArgumentNullException("value");
-                }
-                bytes = value;
+            set
+            {
+                byte[] current_value = bytes;
+                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                    () => SetValue(value),
+                    () => SetValue(current_value)
+                );
             }
+        }
+
+        private void SetValue(byte[] value)
+        {
+            if (value == null) {
+                throw new ArgumentNullException("value");
+            }
+            bytes = value;
         }
 
         [NotNull]

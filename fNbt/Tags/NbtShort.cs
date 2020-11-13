@@ -4,14 +4,26 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a single signed 16-bit integer. </summary>
-    public sealed class NbtShort : NbtTag, INbtShort {
+    public sealed class NbtShort : NbtTag {
         /// <summary> Type of this tag (Short). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Short; }
         }
 
         /// <summary> Value/payload of this tag (a single signed 16-bit integer). </summary>
-        public short Value { get; set; }
+        public short Value
+        {
+            get => _Value;
+            set
+            {
+                short current_value = _Value;
+                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                    () => _Value = value,
+                    () => _Value = current_value
+                );
+            }
+        }
+        private short _Value;
 
 
         /// <summary> Creates an unnamed NbtShort tag with the default value of 0. </summary>

@@ -4,15 +4,26 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a double-precision floating point number. </summary>
-    public sealed class NbtDouble : NbtTag, INbtDouble {
+    public sealed class NbtDouble : NbtTag {
         /// <summary> Type of this tag (Double). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Double; }
         }
 
         /// <summary> Value/payload of this tag (a double-precision floating point number). </summary>
-        public double Value { get; set; }
-
+        public double Value
+        {
+            get => _Value;
+            set
+            {
+                double current_value = _Value;
+                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                    () => _Value = value,
+                    () => _Value = current_value
+                );
+            }
+        }
+        private double _Value;
 
         /// <summary> Creates an unnamed NbtDouble tag with the default value of 0. </summary>
         public NbtDouble() {}

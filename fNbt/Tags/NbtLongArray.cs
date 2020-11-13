@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of signed 64-bit integers. </summary>
-    public sealed class NbtLongArray : NbtTag, INbtLongArray {
+    public sealed class NbtLongArray : NbtTag {
         /// <summary> Type of this tag (LongArray). </summary>
         public override NbtTagType TagType
         {
@@ -21,12 +21,21 @@ namespace fNbt {
             get { return longs; }
             set
             {
-                if (value == null) {
-                    throw new ArgumentNullException("value");
-                }
-
-                longs = value;
+                long[] current_value = longs;
+                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                    () => SetValue(value),
+                    () => SetValue(current_value)
+                );
             }
+        }
+
+        private void SetValue(long[] value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+            longs = value;
         }
 
         [NotNull]

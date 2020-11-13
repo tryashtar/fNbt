@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a list of unnamed tags, all of the same kind. </summary>
-    public sealed class NbtList : NbtTag, INbtList, IList<NbtTag>, IList {
+    public sealed class NbtList : NbtContainerTag {
         /// <summary> Type of this tag (List). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.List; }
@@ -175,9 +175,6 @@ namespace fNbt {
             }
         }
 
-        INbtTag IReadOnlyList<INbtTag>.this[int index] => this[index];
-        INbtTag INbtContainer.this[int index] => this[index];
-
         /// <summary> Gets or sets the tag with the specified name. </summary>
         /// <param name="tagIndex"> The zero-based index of the tag to get or set. </param>
         /// <typeparam name="T"> Type to cast the result to. Must derive from NbtTag. </typeparam>
@@ -193,7 +190,7 @@ namespace fNbt {
         /// <summary> Whether a tag of the specified type can be added to this NbtList. </summary>
         /// <param name="type"> The type to check. </param>
         /// <returns> Whether the type is valid in this NbtList. </returns>
-        public bool CanAdd(NbtTagType type) {
+        public override bool CanAdd(NbtTagType type) {
             return tags.Count == 0 || type == listType;
         }
 
@@ -201,7 +198,7 @@ namespace fNbt {
         /// <param name="newTags"> The collection whose elements should be added to this NbtList. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="newTags"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If given tags do not match ListType, or are of mixed types. </exception>
-        public void AddRange([NotNull] IEnumerable<NbtTag> newTags) {
+        protected override void DoAddRange([NotNull] IEnumerable<NbtTag> newTags) {
             if (newTags == null) throw new ArgumentNullException("newTags");
             foreach (NbtTag tag in newTags) {
                 Add(tag);
@@ -381,17 +378,9 @@ namespace fNbt {
 
         /// <summary> Returns an enumerator that iterates through all tags in this NbtList. </summary>
         /// <returns> An IEnumerator&gt;NbtTag&lt; that can be used to iterate through the list. </returns>
-        public IEnumerator<NbtTag> GetEnumerator() {
+        public override IEnumerator<NbtTag> GetEnumerator() {
             return tags.GetEnumerator();
         }
-
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return tags.GetEnumerator();
-        }
-
-        IEnumerator<INbtTag> IEnumerable<INbtTag>.GetEnumerator() => GetEnumerator();
-
         #endregion
 
 
@@ -400,7 +389,7 @@ namespace fNbt {
         /// <summary> Determines the index of a specific tag in this NbtList </summary>
         /// <returns> The index of tag if found in the list; otherwise, -1. </returns>
         /// <param name="tag"> The tag to locate in this NbtList. </param>
-        public int IndexOf([CanBeNull] NbtTag tag) {
+        public override int IndexOf([CanBeNull] NbtTag tag) {
             if (tag == null) return -1;
             return tags.IndexOf(tag);
         }
@@ -411,7 +400,7 @@ namespace fNbt {
         /// <param name="newTag"> The tag to insert into this NbtList. </param>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="tagIndex"/> is not a valid index in this NbtList. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
-        public void Insert(int tagIndex, [NotNull] NbtTag newTag) {
+        protected override void DoInsert(int tagIndex, [NotNull] NbtTag newTag) {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
             }
@@ -429,7 +418,7 @@ namespace fNbt {
         /// <summary> Removes a tag at the specified index from this NbtList. </summary>
         /// <param name="index"> The zero-based index of the item to remove. </param>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index"/> is not a valid index in the NbtList. </exception>
-        public void RemoveAt(int index) {
+        protected override void DoRemoveAt(int index) {
             NbtTag tag = this[index];
             tags.RemoveAt(index);
             tag.Parent = null;
@@ -442,7 +431,7 @@ namespace fNbt {
         /// <param name="newTag"> The tag to add to this NbtList. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If <paramref name="newTag"/> does not match ListType. </exception>
-        public void Add([NotNull] NbtTag newTag) {
+        protected override void DoAdd([NotNull] NbtTag newTag) {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
             } else if (newTag.Parent != null) {
@@ -463,7 +452,7 @@ namespace fNbt {
 
 
         /// <summary> Removes all tags from this NbtList. </summary>
-        public void Clear() {
+        protected override void DoClear() {
             for (int i = 0; i < tags.Count; i++) {
                 tags[i].Parent = null;
             }
@@ -475,7 +464,7 @@ namespace fNbt {
         /// <summary> Determines whether this NbtList contains a specific tag. </summary>
         /// <returns> true if given tag is found in this NbtList; otherwise, false. </returns>
         /// <param name="item"> The tag to locate in this NbtList. </param>
-        public bool Contains([CanBeNull] NbtTag item) {
+        public override bool Contains([CanBeNull] NbtTag item) {
             return tags.Contains(item);
         }
 
@@ -489,7 +478,7 @@ namespace fNbt {
         /// <exception cref="ArgumentException"> Given array is multidimensional; arrayIndex is equal to or greater than the length of array;
         /// the number of tags in this NbtList is greater than the available space from arrayIndex to the end of the destination array;
         /// or type NbtTag cannot be cast automatically to the type of the destination array. </exception>
-        public void CopyTo(NbtTag[] array, int arrayIndex) {
+        public override void CopyTo(NbtTag[] array, int arrayIndex) {
             tags.CopyTo(array, arrayIndex);
         }
 
@@ -500,7 +489,7 @@ namespace fNbt {
         /// This method also returns false if tag is not found. </returns>
         /// <param name="tag"> The tag to remove from this NbtList. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="tag"/> is <c>null</c>. </exception>
-        public bool Remove([NotNull] NbtTag tag) {
+        protected override bool DoRemove([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (!tags.Remove(tag)) {
                 return false;
@@ -514,72 +503,8 @@ namespace fNbt {
 
         /// <summary> Gets the number of tags contained in the NbtList. </summary>
         /// <returns> The number of tags contained in the NbtList. </returns>
-        public int Count {
+        public override int Count {
             get { return tags.Count; }
-        }
-
-        bool ICollection<NbtTag>.IsReadOnly {
-            get { return false; }
-        }
-
-        #endregion
-
-
-        #region Implementation of IList and ICollection
-
-        void IList.Remove([NotNull] object value) {
-            Remove((NbtTag)value);
-        }
-
-
-        [NotNull]
-        object IList.this[int tagIndex] {
-            get { return tags[tagIndex]; }
-            set { this[tagIndex] = (NbtTag)value; }
-        }
-
-
-        int IList.Add([NotNull] object value) {
-            Add((NbtTag)value);
-            return (tags.Count - 1);
-        }
-
-
-        bool IList.Contains([NotNull] object value) {
-            return tags.Contains((NbtTag)value);
-        }
-
-
-        int IList.IndexOf([NotNull] object value) {
-            return tags.IndexOf((NbtTag)value);
-        }
-
-
-        void IList.Insert(int index, [NotNull] object value) {
-            Insert(index, (NbtTag)value);
-        }
-
-
-        bool IList.IsFixedSize {
-            get { return false; }
-        }
-
-
-        void ICollection.CopyTo(Array array, int index) {
-            CopyTo((NbtTag[])array, index);
-        }
-
-
-        object ICollection.SyncRoot {
-            get { return (tags as ICollection).SyncRoot; }
-        }
-
-        bool ICollection.IsSynchronized {
-            get { return false; }
-        }
-
-        bool IList.IsReadOnly {
-            get { return false; }
         }
 
         #endregion

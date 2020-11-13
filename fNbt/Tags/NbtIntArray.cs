@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of signed 32-bit integers. </summary>
-    public sealed class NbtIntArray : NbtTag, INbtIntArray {
+    public sealed class NbtIntArray : NbtTag {
         static readonly int[] ZeroArray = new int[0];
 
         /// <summary> Type of this tag (ByteArray). </summary>
@@ -15,14 +15,26 @@ namespace fNbt {
         /// <summary> Value/payload of this tag (an array of signed 32-bit integers). Value is stored as-is and is NOT cloned. May not be <c>null</c>. </summary>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
         [NotNull]
-        public int[] Value {
+        public int[] Value
+        {
             get { return ints; }
-            set {
-                if (value == null) {
-                    throw new ArgumentNullException("value");
-                }
-                ints = value;
+            set
+            {
+                int[] current_value = ints;
+                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                    () => SetValue(value),
+                    () => SetValue(current_value)
+                );
             }
+        }
+
+        private void SetValue(int[] value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+            ints = value;
         }
 
         [NotNull]

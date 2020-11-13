@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a set of other named tags. Order is not guaranteed. </summary>
-    public sealed class NbtCompound : NbtTag, INbtCompound, ICollection<NbtTag>, ICollection {
+    public sealed class NbtCompound : NbtContainerTag {
         /// <summary> Type of this tag (Compound). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Compound; }
@@ -89,8 +89,6 @@ namespace fNbt {
             }
         }
 
-        INbtTag INbtCompound.this[string tagName] => this[tagName];
-
         /// <summary> Gets or sets the tag at the specified index. </summary>
         /// <returns> The tag at the specified index. </returns>
         /// <param name="tagIndex"> The zero-based index of the tag to get or set. </param>
@@ -101,9 +99,6 @@ namespace fNbt {
             get { return (NbtTag)tags[tagIndex]; }
             set { tags.RemoveAt(tagIndex); this[value.Name] = value; }
         }
-
-        INbtTag INbtContainer.this[int index] => this[index];
-
 
         /// <summary> Gets the tag with the specified name. May return <c>null</c>. </summary>
         /// <param name="tagName"> The name of the tag to get. </param>
@@ -177,14 +172,14 @@ namespace fNbt {
         /// <summary> Whether a tag of the specified type can be added to this NbtCompound (always true). </summary>
         /// <param name="type"> The type to check. </param>
         /// <returns> Whether the type is valid in this NbtCompound. </returns>
-        public bool CanAdd(NbtTagType type) => true;
+        public override bool CanAdd(NbtTagType type) => true;
 
         /// <summary> Adds all tags from the specified collection to this NbtCompound. </summary>
         /// <param name="newTags"> The collection whose elements should be added to this NbtCompound. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="newTags"/> is <c>null</c>, or one of the tags in newTags is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If one of the given tags was unnamed,
         /// or if a tag with the given name already exists in this NbtCompound. </exception>
-        public void AddRange([NotNull] IEnumerable<NbtTag> newTags) {
+        protected override void DoAddRange([NotNull] IEnumerable<NbtTag> newTags) {
             if (newTags == null) throw new ArgumentNullException("newTags");
             foreach (NbtTag tag in newTags) {
                 Add(tag);
@@ -208,7 +203,19 @@ namespace fNbt {
         /// <returns> true if the tag is successfully found and removed; otherwise, false.
         /// This method returns false if name is not found in the NbtCompound. </returns>
         /// <exception cref="ArgumentNullException"> <paramref name="tagName"/> is <c>null</c>. </exception>
-        public bool Remove([NotNull] string tagName) {
+        public bool Remove(string tagName)
+        {
+            int index = IndexOf(tagName);
+            if (index == -1)
+                return false;
+            var tag = (NbtTag)tags[index];
+            return PerformChange(new DescriptionHolder("Remove {0} from {1}", tag, this),
+                () => DoRemove(tagName),
+                () => { DoInsert(index, tag); }
+            );
+        }
+
+        private bool DoRemove([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
             if (!tags.Contains(tagName)) {
                 return false;
@@ -217,6 +224,15 @@ namespace fNbt {
             tags.Remove(tagName);
             tag.Parent = null;
             return true;
+        }
+
+        /// <summary> Removes a tag at the specified index from this NbtCompound. </summary>
+        /// <param name="index"> The zero-based index of the item to remove. </param>
+        /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index"/> is not a valid index in the NbtCompound. </exception>
+        protected override void DoRemoveAt(int index) {
+            var tag = (NbtTag)tags[index];
+            tag.Parent = null;
+            tags.RemoveAt(index);
         }
 
 
@@ -241,7 +257,7 @@ namespace fNbt {
         /// </summary>
         /// <param name="tag">The tag to search for</param>
         /// <returns>The index of the provided tag in this compound, or -1 if it does not contain it</returns>
-        public int IndexOf(NbtTag tag) {
+        public override int IndexOf(NbtTag tag) {
             for (int i = 0; i < tags.Count; i++) {
                 if (tags[i] == tag)
                     return i;
@@ -273,9 +289,6 @@ namespace fNbt {
         public IEnumerable<NbtTag> Tags {
             get { return tags.Values.Cast<NbtTag>(); }
         }
-
-        IEnumerable<INbtTag> INbtCompound.Tags => Tags;
-
 
         #region Reading / Writing
 
@@ -442,14 +455,9 @@ namespace fNbt {
 
         /// <summary> Returns an enumerator that iterates through all tags in this NbtCompound. </summary>
         /// <returns> An IEnumerator&gt;NbtTag&lt; that can be used to iterate through the collection. </returns>
-        public IEnumerator<NbtTag> GetEnumerator() {
+        public override IEnumerator<NbtTag> GetEnumerator() {
             return tags.Values.Cast<NbtTag>().GetEnumerator();
         }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return tags.Values.GetEnumerator();
-        }
-        IEnumerator<INbtTag> IEnumerable<INbtTag>.GetEnumerator() => GetEnumerator();
 
         #endregion
 
@@ -461,7 +469,7 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If the given tag is unnamed;
         /// or if a tag with the given name already exists in this NbtCompound. </exception>
-        public void Add([NotNull] NbtTag newTag) {
+        protected override void DoAdd([NotNull] NbtTag newTag) {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
             } else if (newTag == this) {
@@ -481,7 +489,7 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If the given tag is unnamed;
         /// or if a tag with the given name already exists in this NbtCompound. </exception>
-        public void Insert(int index, [NotNull] NbtTag newTag)
+        protected override void DoInsert(int index, [NotNull] NbtTag newTag)
         {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
@@ -498,7 +506,7 @@ namespace fNbt {
 
 
         /// <summary> Removes all tags from this NbtCompound. </summary>
-        public void Clear() {
+        protected override void DoClear() {
             foreach (NbtTag tag in tags.Values) {
                 tag.Parent = null;
             }
@@ -512,7 +520,7 @@ namespace fNbt {
         /// <param name="tag"> The object to locate in this NbtCompound. May not be <c>null</c>. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="tag"/> is <c>null</c>. </exception>
         [Pure]
-        public bool Contains([NotNull] NbtTag tag) {
+        public override bool Contains([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (tag.Name == null) return false;
             if (tags.Contains(tag.Name)) {
@@ -532,7 +540,7 @@ namespace fNbt {
         /// <exception cref="ArgumentException"> Given array is multidimensional; arrayIndex is equal to or greater than the length of array;
         /// the number of tags in this NbtCompound is greater than the available space from arrayIndex to the end of the destination array;
         /// or type NbtTag cannot be cast automatically to the type of the destination array. </exception>
-        public void CopyTo(NbtTag[] array, int arrayIndex) {
+        public override void CopyTo(NbtTag[] array, int arrayIndex) {
             tags.Values.CopyTo(array, arrayIndex);
         }
 
@@ -544,7 +552,7 @@ namespace fNbt {
         /// <param name="tag"> The tag to remove from the NbtCompound. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="tag"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If the given tag is unnamed </exception>
-        public bool Remove([NotNull] NbtTag tag) {
+        protected override bool DoRemove([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (tag.Name == null) throw new ArgumentException("Trying to remove an unnamed tag.");
             if (tags.Contains(tag.Name)) {
@@ -561,34 +569,11 @@ namespace fNbt {
 
         /// <summary> Gets the number of tags contained in the NbtCompound. </summary>
         /// <returns> The number of tags contained in the NbtCompound. </returns>
-        public int Count {
+        public override int Count {
             get { return tags.Count; }
         }
 
-        bool ICollection<NbtTag>.IsReadOnly {
-            get { return false; }
-        }
-
         #endregion
-
-
-        #region Implementation of ICollection
-
-        void ICollection.CopyTo(Array array, int index) {
-            CopyTo((NbtTag[])array, index);
-        }
-
-
-        object ICollection.SyncRoot {
-            get { return (tags as ICollection).SyncRoot; }
-        }
-
-        bool ICollection.IsSynchronized {
-            get { return false; }
-        }
-
-        #endregion
-
 
         /// <inheritdoc />
         public override object Clone() {
