@@ -17,7 +17,7 @@ namespace fNbt {
             set
             {
                 string current_value = stringVal;
-                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
                     () => SetValue(value),
                     () => SetValue(current_value)
                 );

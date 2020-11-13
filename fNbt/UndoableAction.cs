@@ -21,7 +21,7 @@ namespace fNbt
 
         public string Convert(Func<object, string> converter)
         {
-            return String.Format(Format, Objects.Select(converter));
+            return String.Format(Format, Objects.Select(converter).ToArray());
         }
     }
 
@@ -85,7 +85,7 @@ namespace fNbt
             DoFunction = function;
         }
 
-        public T Do()
+        public new T Do()
         {
             if (!IsDone)
             {

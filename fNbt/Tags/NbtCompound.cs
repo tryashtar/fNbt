@@ -209,7 +209,7 @@ namespace fNbt {
             if (index == -1)
                 return false;
             var tag = (NbtTag)tags[index];
-            return PerformChange(new DescriptionHolder("Remove {0} from {1}", tag, this),
+            return PerformAction(new DescriptionHolder("Remove {0} from {1}", tag, this),
                 () => DoRemove(tagName),
                 () => { DoInsert(index, tag); }
             );

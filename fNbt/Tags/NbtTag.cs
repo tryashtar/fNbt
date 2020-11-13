@@ -9,39 +9,62 @@ namespace fNbt {
         /// <summary> Parent compound tag, either NbtList or NbtCompound, if any.
         /// May be <c>null</c> for detached tags. </summary>
         [CanBeNull]
-        public NbtTag Parent { get; internal set; }
+        public NbtContainerTag Parent { get; internal set; }
 
         /// <summary> Type of this tag. </summary>
         public abstract NbtTagType TagType { get; }
 
         /// <summary> Event raised when this tag or one of its children is changed. </summary>
-        public event EventHandler<(NbtTag, UndoableAction)> Changed;
+        public event EventHandler<NbtTag> Changed;
 
-        private void RaiseChanged(NbtTag tag, UndoableAction action) => Changed?.Invoke(this, (tag, action));
+        /// <summary> Event raised when this tag or one of its children has an undoable action performed on it. </summary>
+        public event EventHandler<(NbtTag tag, UndoableAction action)> ActionPerformed;
+
+        private void RaiseChanged(NbtTag tag) => Changed?.Invoke(this, tag);
+        private void RaiseActionPerformed(NbtTag tag, UndoableAction action) => ActionPerformed?.Invoke(this, (tag, action));
 
         /// <summary> Helper method for signaling changes to parent tags. </summary>
-        protected T PerformChange<T>(DescriptionHolder description, Func<T> action, Action undo)
+        protected T PerformAction<T>(DescriptionHolder description, Func<T> action, Action undo)
         {
-            var tag = this;
-            var undoable = new UndoableAction<T>(description, action, undo);
-            T result = undoable.Do();
-            while (tag != null)
+            T modified_action()
             {
-                tag.RaiseChanged(this, undoable);
-                tag = tag.Parent;
+                T before = action();
+                RaiseChangedLoop();
+                return before;
             }
+            undo += RaiseChangedLoop;
+            var undoable = new UndoableAction<T>(description, modified_action, undo);
+            var result = undoable.Do();
+            RaiseActionLoop(undoable);
             return result;
         }
 
         /// <summary> Helper method for signaling changes to parent tags. </summary>
-        protected void PerformChange(DescriptionHolder description, Action action, Action undo)
+        protected void PerformAction(DescriptionHolder description, Action action, Action undo)
         {
-            var tag = this;
+            action += RaiseChangedLoop;
+            undo += RaiseChangedLoop;
             var undoable = new UndoableAction(description, action, undo);
             undoable.Do();
+            RaiseActionLoop(undoable);
+        }
+
+        private void RaiseChangedLoop()
+        {
+            var tag = this;
             while (tag != null)
             {
-                tag.RaiseChanged(this, undoable);
+                tag.RaiseChanged(this);
+                tag = tag.Parent;
+            }
+        }
+
+        private void RaiseActionLoop(UndoableAction action)
+        {
+            var tag = this;
+            while (tag != null)
+            {
+                tag.RaiseActionPerformed(this, action);
                 tag = tag.Parent;
             }
         }
@@ -71,7 +94,7 @@ namespace fNbt {
             get { return name; }
             set {
                 string current_name = name;
-                PerformChange(new DescriptionHolder("Rename {0} to {1}", this, value),
+                PerformAction(new DescriptionHolder("Rename {0} to {1}", this, value),
                     () => SetName(value),
                     () => SetName(current_name)
                 );

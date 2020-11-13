@@ -21,7 +21,7 @@ namespace fNbt {
             set
             {
                 int[] current_value = ints;
-                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
                     () => SetValue(value),
                     () => SetValue(current_value)
                 );

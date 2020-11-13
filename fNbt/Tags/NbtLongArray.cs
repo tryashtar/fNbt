@@ -22,7 +22,7 @@ namespace fNbt {
             set
             {
                 long[] current_value = longs;
-                PerformChange(new DescriptionHolder("Change value of {0} to {1}", this, value),
+                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
                     () => SetValue(value),
                     () => SetValue(current_value)
                 );
