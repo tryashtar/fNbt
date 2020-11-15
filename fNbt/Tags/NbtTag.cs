@@ -84,7 +84,7 @@ namespace fNbt {
             get { return name; }
             set {
                 string current_name = name;
-                PerformAction(new DescriptionHolder("Rename {0} to {1}", this, value),
+                PerformAction(new DescriptionHolder("Rename {0} from {1}", this, current_name),
                     () => SetName(value),
                     () => SetName(current_name)
                 );
