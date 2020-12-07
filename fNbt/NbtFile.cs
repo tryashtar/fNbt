@@ -25,7 +25,7 @@ namespace fNbt {
         /// <summary> Root tag of this file. Must be a named CompoundTag. Defaults to an empty-named tag. </summary>
         /// <exception cref="ArgumentException"> If given tag is unnamed. </exception>
         [NotNull]
-        public NbtCompound RootTag {
+        public NbtTag RootTag {
             get { return rootTag; }
             set {
                 if (value == null) throw new ArgumentNullException("value");
@@ -34,8 +34,10 @@ namespace fNbt {
             }
         }
 
+        public T GetRootTag<T>() where T : NbtTag => RootTag as T;
+
         [NotNull]
-        NbtCompound rootTag;
+        NbtTag rootTag;
 
         /// <summary> Whether new NbtFiles should default to big-endian encoding (default: true). </summary>
         public static bool BigEndianByDefault { get; set; }
@@ -94,7 +96,7 @@ namespace fNbt {
         /// <summary> Creates a new NBT file with the given root tag. </summary>
         /// <param name="rootTag"> Compound tag to set as the root tag. May be <c>null</c>. </param>
         /// <exception cref="ArgumentException"> If given <paramref name="rootTag"/> is unnamed. </exception>
-        public NbtFile([NotNull] NbtCompound rootTag)
+        public NbtFile([NotNull] NbtTag rootTag)
             : this() {
             if (rootTag == null) throw new ArgumentNullException("rootTag");
             RootTag = rootTag;
@@ -317,7 +319,18 @@ namespace fNbt {
                 case -1:
                     throw new EndOfStreamException();
 
-                case (byte)NbtTagType.Compound: // 0x0A
+                case (byte)NbtTagType.Byte:
+                case (byte)NbtTagType.Short:
+                case (byte)NbtTagType.Int:
+                case (byte)NbtTagType.Long:
+                case (byte)NbtTagType.Float:
+                case (byte)NbtTagType.Double:
+                case (byte)NbtTagType.String:
+                case (byte)NbtTagType.ByteArray:
+                case (byte)NbtTagType.IntArray:
+                case (byte)NbtTagType.LongArray:
+                case (byte)NbtTagType.Compound:
+                case (byte)NbtTagType.List:
                     compression = NbtCompression.None;
                     break;
 
@@ -345,16 +358,14 @@ namespace fNbt {
             if (firstByte < 0) {
                 throw new EndOfStreamException();
             }
-            if (firstByte != (int)NbtTagType.Compound) {
-                throw new NbtFormatException("Given NBT stream does not start with a TAG_Compound");
-            }
             var reader = new NbtBinaryReader(stream, BigEndian) {
                 Selector = tagSelector
             };
 
-            var rootCompound = new NbtCompound(reader.ReadString());
-            rootCompound.ReadTag(reader);
-            RootTag = rootCompound;
+            var rootValue = NbtCompound.CreateTag((NbtTagType)firstByte);
+            rootValue.Name = reader.ReadString();
+            rootValue.ReadTag(reader);
+            RootTag = rootValue;
         }
 
         #endregion

@@ -292,6 +292,37 @@ namespace fNbt {
 
         #region Reading / Writing
 
+        internal static NbtTag CreateTag(NbtTagType type) {
+            switch (type) {
+                case NbtTagType.Byte:
+                    return  new NbtByte();
+                case NbtTagType.Short:
+                    return new NbtShort();
+                case NbtTagType.Int:
+                    return new NbtInt();
+                case NbtTagType.Long:
+                    return new NbtLong();
+                case NbtTagType.Float:
+                    return new NbtFloat();
+                case NbtTagType.Double:
+                    return new NbtDouble();
+                case NbtTagType.ByteArray:
+                    return new NbtByteArray();
+                case NbtTagType.String:
+                    return new NbtString();
+                case NbtTagType.List:
+                    return new NbtList();
+                case NbtTagType.Compound:
+                    return new NbtCompound();
+                case NbtTagType.IntArray:
+                    return new NbtIntArray();
+                case NbtTagType.LongArray:
+                    return new NbtLongArray();
+                default:
+                    throw new NbtFormatException("Unsupported tag type found: " + type);
+            }
+        }
+
         internal override bool ReadTag(NbtBinaryReader readStream) {
             if (Parent != null && readStream.Selector != null && !readStream.Selector(this)) {
                 SkipTag(readStream);
@@ -300,62 +331,10 @@ namespace fNbt {
 
             while (true) {
                 NbtTagType nextTag = readStream.ReadTagType();
-                NbtTag newTag;
-                switch (nextTag) {
-                    case NbtTagType.End:
-                        return true;
+                if (nextTag == NbtTagType.End)
+                    return true;
 
-                    case NbtTagType.Byte:
-                        newTag = new NbtByte();
-                        break;
-
-                    case NbtTagType.Short:
-                        newTag = new NbtShort();
-                        break;
-
-                    case NbtTagType.Int:
-                        newTag = new NbtInt();
-                        break;
-
-                    case NbtTagType.Long:
-                        newTag = new NbtLong();
-                        break;
-
-                    case NbtTagType.Float:
-                        newTag = new NbtFloat();
-                        break;
-
-                    case NbtTagType.Double:
-                        newTag = new NbtDouble();
-                        break;
-
-                    case NbtTagType.ByteArray:
-                        newTag = new NbtByteArray();
-                        break;
-
-                    case NbtTagType.String:
-                        newTag = new NbtString();
-                        break;
-
-                    case NbtTagType.List:
-                        newTag = new NbtList();
-                        break;
-
-                    case NbtTagType.Compound:
-                        newTag = new NbtCompound();
-                        break;
-
-                    case NbtTagType.IntArray:
-                        newTag = new NbtIntArray();
-                        break;
-                    
-                    case NbtTagType.LongArray:
-                        newTag = new NbtLongArray();
-                        break;
-
-                    default:
-                        throw new NbtFormatException("Unsupported tag type found in NBT_Compound: " + nextTag);
-                }
+                NbtTag newTag = CreateTag(nextTag);
                 newTag.Parent = this;
                 newTag.Name = readStream.ReadString();
                 if (newTag.ReadTag(readStream)) {
