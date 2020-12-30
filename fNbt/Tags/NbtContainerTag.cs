@@ -29,7 +29,7 @@ namespace fNbt
 
         public void Add(NbtTag item)
         {
-            PerformAction(new DescriptionHolder("Add {0} to {1}", this, item),
+            PerformAction(new DescriptionHolder("Add {0} to {1}", item, this),
                 () => DoAdd(item),
                 () => DoRemove(item)
             );
@@ -37,7 +37,7 @@ namespace fNbt
         public void AddRange(IEnumerable<NbtTag> items)
         {
             var list = items.ToList();
-            PerformAction(new DescriptionHolder("Add {0} to {1}", this, items),
+            PerformAction(new DescriptionHolder("Add {0} to {1}", items, this),
                 () => DoAddRange(items),
                 () => { foreach (var item in list) { DoRemove(item); } }
             );

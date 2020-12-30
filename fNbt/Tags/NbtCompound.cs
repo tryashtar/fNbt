@@ -182,7 +182,7 @@ namespace fNbt {
         protected override void DoAddRange([NotNull] IEnumerable<NbtTag> newTags) {
             if (newTags == null) throw new ArgumentNullException("newTags");
             foreach (NbtTag tag in newTags) {
-                Add(tag);
+                DoAdd(tag);
             }
         }
 
