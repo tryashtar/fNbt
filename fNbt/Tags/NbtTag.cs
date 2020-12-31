@@ -49,7 +49,7 @@ namespace fNbt {
             RaiseActionPerformed(undoable);
         }
 
-        private void RaiseChangedLoop()
+        internal void RaiseChangedLoop()
         {
             var tag = this;
             while (tag != null)

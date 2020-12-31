@@ -257,10 +257,11 @@ namespace fNbt {
         private void DoSort(IComparer<NbtTag> sorter, bool recursive)
         {
             var tags = Tags.OrderBy(x => x, sorter).ToList();
-            foreach (var tag in tags)
+            if (recursive)
             {
-                if (recursive)
+                foreach (var tag in tags)
                 {
+                    tag.RaiseChangedLoop();
                     if (tag is NbtCompound sub)
                         sub.DoSort(sorter, true);
                     else if (tag is NbtList list)
