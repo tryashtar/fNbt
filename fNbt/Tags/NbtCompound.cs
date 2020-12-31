@@ -197,6 +197,98 @@ namespace fNbt {
             return tags.ContainsKey(tagName);
         }
 
+        public void Sort(IComparer<NbtTag> sorter, bool recursive)
+        {
+            if (recursive)
+            {
+                var restore_sort = (NbtCompound)this.Clone();
+                PerformAction(new DescriptionHolder("Sort {0}", this),
+                     () => { DoSort(sorter, true); },
+                     () => { DoUnsortRecursive(restore_sort); }
+                 );
+            }
+            else
+            {
+                var restore_sort = this.Tags.ToList();
+                PerformAction(new DescriptionHolder("Sort {0}", this),
+                     () => { DoSort(sorter, false); },
+                     () => { DoUnsortRoot(restore_sort); }
+                 );
+            }
+        }
+
+        private void DoUnsortRecursive(NbtCompound reference)
+        {
+            var order = Tags.OrderBy(x => reference.IndexOf(x.Name)).ToList();
+            foreach (var tag in order)
+            {
+                if (tag is NbtCompound sub)
+                    sub.DoUnsortRecursive((NbtCompound)reference[tag.Name]);
+                else if (tag is NbtList list)
+                    UnsortListChildren(list, (NbtList)reference[tag.Name]);
+            }
+            DoUnsortRoot(order);
+        }
+
+        private static void UnsortListChildren(NbtList list, NbtList reference)
+        {
+            if (list.ListType == NbtTagType.Compound)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    ((NbtCompound)list[i]).DoUnsortRecursive((NbtCompound)reference[i]);
+                }
+            }
+            else if (list.ListType == NbtTagType.List)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    UnsortListChildren((NbtList)list[i], (NbtList)reference[i]);
+                }
+            }
+        }
+
+        private void DoUnsortRoot(List<NbtTag> order)
+        {
+            DoClear();
+            DoAddRange(order);
+        }
+
+        private void DoSort(IComparer<NbtTag> sorter, bool recursive)
+        {
+            var tags = Tags.OrderBy(x => x, sorter).ToList();
+            foreach (var tag in tags)
+            {
+                if (recursive)
+                {
+                    if (tag is NbtCompound sub)
+                        sub.DoSort(sorter, true);
+                    else if (tag is NbtList list)
+                        SortListChildren(list, sorter);
+                }
+            }
+            DoClear();
+            DoAddRange(tags);
+        }
+
+        private static void SortListChildren(NbtList list, IComparer<NbtTag> sorter)
+        {
+            if (list.ListType == NbtTagType.Compound)
+            {
+                foreach (NbtCompound item in list)
+                {
+                    item.DoSort(sorter, true);
+                }
+            }
+            else if (list.ListType == NbtTagType.List)
+            {
+                foreach (NbtList item in list)
+                {
+                    SortListChildren(item, sorter);
+                }
+            }
+        }
+
 
         /// <summary> Removes the tag with the specified name from this NbtCompound. </summary>
         /// <param name="tagName"> The name of the tag to remove. </param>
