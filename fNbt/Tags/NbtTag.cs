@@ -15,13 +15,13 @@ namespace fNbt {
         public abstract NbtTagType TagType { get; }
 
         /// <summary> Event raised when this tag or one of its children is changed. </summary>
-        public event EventHandler<NbtTag> Changed;
+        public event Action<NbtTag> Changed;
 
-        /// <summary> Event raised when this tag or one of its children has an undoable action performed on it. </summary>
-        public event EventHandler<UndoableAction> ActionPerformed;
+        /// <summary> Event raised when this tag has an undoable action performed on it. </summary>
+        public event Action<UndoableAction> ActionPerformed;
 
-        private void RaiseChanged(NbtTag tag) => Changed?.Invoke(this, tag);
-        private void RaiseActionPerformed(UndoableAction action) => ActionPerformed?.Invoke(this, action);
+        private void RaiseChanged(NbtTag tag) => Changed?.Invoke(tag);
+        private void RaiseActionPerformed(UndoableAction action) => ActionPerformed?.Invoke(action);
 
         /// <summary> Helper method for signaling changes to parent tags. </summary>
         protected T PerformAction<T>(DescriptionHolder description, Func<T> action, Action undo)
@@ -84,21 +84,17 @@ namespace fNbt {
             get { return name; }
             set {
                 string current_name = name;
+                if (current_name == value)
+                    return;
                 PerformAction(new DescriptionHolder("Rename {0} from {1}", this, current_name),
                     () => SetName(value),
                     () => SetName(current_name)
                 );
-
             }
         }
 
         private void SetName(string value)
         {
-            if (name == value)
-            {
-                return;
-            }
-
             var parentAsCompound = Parent as NbtCompound;
             if (parentAsCompound != null)
             {

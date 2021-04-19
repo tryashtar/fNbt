@@ -52,7 +52,7 @@ namespace fNbt
         }
         public void Insert(int index, NbtTag item)
         {
-            PerformAction(new DescriptionHolder("Insert {0} into {1} at index {2}", this, item, index),
+            PerformAction(new DescriptionHolder("Insert {0} into {1} at index {2}", item, this, index),
                 () => DoInsert(index, item),
                 () => DoRemoveAt(index)
             );
@@ -64,7 +64,7 @@ namespace fNbt
                 return false;
             return PerformAction(new DescriptionHolder("Remove {0} from {1}", item, this),
                 () => DoRemove(item),
-                () => { DoInsert(index, item); }
+                () => DoInsert(index, item)
             );
         }
         public void RemoveAt(int index)
