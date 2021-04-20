@@ -27,6 +27,21 @@ namespace fNbt
         protected abstract void DoAddRange(IEnumerable<NbtTag> items);
         protected abstract void DoClear();
 
+        public IEnumerable<NbtTag> GetAllTags()
+        {
+            foreach (var tag in this)
+            {
+                yield return tag;
+                if (tag is NbtContainerTag container)
+                {
+                    foreach (var sub in container.GetAllTags())
+                    {
+                        yield return sub;
+                    }
+                }
+            }
+        }
+
         public void Add(NbtTag item)
         {
             PerformAction(new DescriptionHolder("Add {0} to {1}", item, this),

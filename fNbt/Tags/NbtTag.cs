@@ -15,12 +15,12 @@ namespace fNbt {
         public abstract NbtTagType TagType { get; }
 
         /// <summary> Event raised when this tag or one of its children is changed. </summary>
-        public event Action<NbtTag> Changed;
+        public event Action<NbtTag> OnChanged;
 
         /// <summary> Event raised when this tag has an undoable action performed on it. </summary>
         public event Action<UndoableAction> ActionPerformed;
 
-        private void RaiseChanged(NbtTag tag) => Changed?.Invoke(tag);
+        protected void RaiseChanged(NbtTag tag) => OnChanged?.Invoke(tag);
         private void RaiseActionPerformed(UndoableAction action) => ActionPerformed?.Invoke(action);
 
         /// <summary> Helper method for signaling changes to parent tags. </summary>
@@ -49,7 +49,7 @@ namespace fNbt {
             RaiseActionPerformed(undoable);
         }
 
-        internal void RaiseChangedLoop()
+        protected void RaiseChangedLoop()
         {
             var tag = this;
             while (tag != null)

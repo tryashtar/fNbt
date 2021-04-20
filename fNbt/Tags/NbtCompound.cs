@@ -203,16 +203,16 @@ namespace fNbt {
             {
                 var restore_sort = (NbtCompound)this.Clone();
                 PerformAction(new DescriptionHolder("Sort {0}", this),
-                     () => { DoSort(sorter, true); },
-                     () => { DoUnsortRecursive(restore_sort); }
+                     () => DoSort(sorter, true),
+                     () => DoUnsortRecursive(restore_sort)
                  );
             }
             else
             {
                 var restore_sort = this.Tags.ToList();
                 PerformAction(new DescriptionHolder("Sort {0}", this),
-                     () => { DoSort(sorter, false); },
-                     () => { DoUnsortRoot(restore_sort); }
+                     () => DoSort(sorter, false),
+                     () => DoUnsortRoot(restore_sort)
                  );
             }
         }
@@ -261,7 +261,6 @@ namespace fNbt {
             {
                 foreach (var tag in tags)
                 {
-                    tag.RaiseChangedLoop();
                     if (tag is NbtCompound sub)
                         sub.DoSort(sorter, true);
                     else if (tag is NbtList list)
@@ -270,6 +269,7 @@ namespace fNbt {
             }
             DoClear();
             DoAddRange(tags);
+            RaiseChanged(this);
         }
 
         private static void SortListChildren(NbtList list, IComparer<NbtTag> sorter)
