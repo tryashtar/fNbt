@@ -11,19 +11,7 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a double-precision floating point number). </summary>
-        public double Value
-        {
-            get => _Value;
-            set
-            {
-                double current_value = _Value;
-                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
-                    () => _Value = value,
-                    () => _Value = current_value
-                );
-            }
-        }
-        private double _Value;
+        public double Value { get; set; }
 
         /// <summary> Creates an unnamed NbtDouble tag with the default value of 0. </summary>
         public NbtDouble() {}
@@ -46,7 +34,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtDouble([CanBeNull] string tagName, double value) {
             name = tagName;
-            _Value = value;
+            Value = value;
         }
 
 
@@ -56,7 +44,7 @@ namespace fNbt {
         public NbtDouble([NotNull] NbtDouble other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            _Value = other.Value;
+            Value = other.Value;
         }
 
 
@@ -65,7 +53,7 @@ namespace fNbt {
                 readStream.ReadDouble();
                 return false;
             }
-            _Value = readStream.ReadDouble();
+            Value = readStream.ReadDouble();
             return true;
         }
 

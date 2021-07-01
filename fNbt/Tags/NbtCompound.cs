@@ -179,10 +179,10 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="newTags"/> is <c>null</c>, or one of the tags in newTags is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If one of the given tags was unnamed,
         /// or if a tag with the given name already exists in this NbtCompound. </exception>
-        protected override void DoAddRange([NotNull] IEnumerable<NbtTag> newTags) {
+        public override void AddRange([NotNull] IEnumerable<NbtTag> newTags) {
             if (newTags == null) throw new ArgumentNullException("newTags");
             foreach (NbtTag tag in newTags) {
-                DoAdd(tag);
+                Add(tag);
             }
         }
 
@@ -197,37 +197,17 @@ namespace fNbt {
             return tags.ContainsKey(tagName);
         }
 
-        public void Sort(IComparer<NbtTag> sorter, bool recursive)
-        {
-            if (recursive)
-            {
-                var restore_sort = (NbtCompound)this.Clone();
-                PerformAction(new DescriptionHolder("Sort {0}", this),
-                     () => DoSort(sorter, true),
-                     () => DoUnsortRecursive(restore_sort)
-                 );
-            }
-            else
-            {
-                var restore_sort = this.Tags.ToList();
-                PerformAction(new DescriptionHolder("Sort {0}", this),
-                     () => DoSort(sorter, false),
-                     () => DoUnsortRoot(restore_sort)
-                 );
-            }
-        }
-
-        private void DoUnsortRecursive(NbtCompound reference)
+        public void UnsortRecursive(NbtCompound reference)
         {
             var order = Tags.OrderBy(x => reference.IndexOf(x.Name)).ToList();
             foreach (var tag in order)
             {
                 if (tag is NbtCompound sub)
-                    sub.DoUnsortRecursive((NbtCompound)reference[tag.Name]);
+                    sub.UnsortRecursive((NbtCompound)reference[tag.Name]);
                 else if (tag is NbtList list)
                     UnsortListChildren(list, (NbtList)reference[tag.Name]);
             }
-            DoUnsortRoot(order);
+            UnsortRoot(order);
         }
 
         private static void UnsortListChildren(NbtList list, NbtList reference)
@@ -236,7 +216,7 @@ namespace fNbt {
             {
                 for (int i = 0; i < list.Count; i++)
                 {
-                    ((NbtCompound)list[i]).DoUnsortRecursive((NbtCompound)reference[i]);
+                    ((NbtCompound)list[i]).UnsortRecursive((NbtCompound)reference[i]);
                 }
             }
             else if (list.ListType == NbtTagType.List)
@@ -248,13 +228,13 @@ namespace fNbt {
             }
         }
 
-        private void DoUnsortRoot(List<NbtTag> order)
+        public void UnsortRoot(IEnumerable<NbtTag> order)
         {
-            DoClear();
-            DoAddRange(order);
+            Clear();
+            AddRange(order);
         }
 
-        private void DoSort(IComparer<NbtTag> sorter, bool recursive)
+        public void Sort(IComparer<NbtTag> sorter, bool recursive)
         {
             var tags = Tags.OrderBy(x => x, sorter).ToList();
             if (recursive)
@@ -262,14 +242,13 @@ namespace fNbt {
                 foreach (var tag in tags)
                 {
                     if (tag is NbtCompound sub)
-                        sub.DoSort(sorter, true);
+                        sub.Sort(sorter, true);
                     else if (tag is NbtList list)
                         SortListChildren(list, sorter);
                 }
             }
-            DoClear();
-            DoAddRange(tags);
-            RaiseChanged(this);
+            Clear();
+            AddRange(tags);
         }
 
         private static void SortListChildren(NbtList list, IComparer<NbtTag> sorter)
@@ -278,7 +257,7 @@ namespace fNbt {
             {
                 foreach (NbtCompound item in list)
                 {
-                    item.DoSort(sorter, true);
+                    item.Sort(sorter, true);
                 }
             }
             else if (list.ListType == NbtTagType.List)
@@ -296,19 +275,7 @@ namespace fNbt {
         /// <returns> true if the tag is successfully found and removed; otherwise, false.
         /// This method returns false if name is not found in the NbtCompound. </returns>
         /// <exception cref="ArgumentNullException"> <paramref name="tagName"/> is <c>null</c>. </exception>
-        public bool Remove(string tagName)
-        {
-            int index = IndexOf(tagName);
-            if (index == -1)
-                return false;
-            var tag = tags[index];
-            return PerformAction(new DescriptionHolder("Remove {0} from {1}", tag, this),
-                () => DoRemove(tagName),
-                () => { DoInsert(index, tag); }
-            );
-        }
-
-        private bool DoRemove([NotNull] string tagName) {
+        public bool Remove([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
             if (!tags.ContainsKey(tagName)) {
                 return false;
@@ -322,7 +289,7 @@ namespace fNbt {
         /// <summary> Removes a tag at the specified index from this NbtCompound. </summary>
         /// <param name="index"> The zero-based index of the item to remove. </param>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index"/> is not a valid index in the NbtCompound. </exception>
-        protected override void DoRemoveAt(int index) {
+        public override void RemoveAt(int index) {
             var tag = tags[index];
             tag.Parent = null;
             tags.RemoveAt(index);
@@ -541,7 +508,7 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If the given tag is unnamed;
         /// or if a tag with the given name already exists in this NbtCompound. </exception>
-        protected override void DoAdd([NotNull] NbtTag newTag) {
+        public override void Add([NotNull] NbtTag newTag) {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
             } else if (newTag == this) {
@@ -561,7 +528,7 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If the given tag is unnamed;
         /// or if a tag with the given name already exists in this NbtCompound. </exception>
-        protected override void DoInsert(int index, [NotNull] NbtTag newTag)
+        public override void Insert(int index, [NotNull] NbtTag newTag)
         {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
@@ -578,7 +545,7 @@ namespace fNbt {
 
 
         /// <summary> Removes all tags from this NbtCompound. </summary>
-        protected override void DoClear() {
+        public override void Clear() {
             foreach (NbtTag tag in tags.Values) {
                 tag.Parent = null;
             }
@@ -624,7 +591,7 @@ namespace fNbt {
         /// <param name="tag"> The tag to remove from the NbtCompound. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="tag"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If the given tag is unnamed </exception>
-        protected override bool DoRemove([NotNull] NbtTag tag) {
+        public override bool Remove([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (tag.Name == null) throw new ArgumentException("Trying to remove an unnamed tag.");
             if (tags.ContainsKey(tag.Name)) {

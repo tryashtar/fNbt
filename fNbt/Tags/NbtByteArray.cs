@@ -20,20 +20,12 @@ namespace fNbt {
             get { return bytes; }
             set
             {
-                byte[] current_value = bytes;
-                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
-                    () => SetValue(value),
-                    () => SetValue(current_value)
-                );
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                bytes = value;
             }
-        }
-
-        private void SetValue(byte[] value)
-        {
-            if (value == null) {
-                throw new ArgumentNullException("value");
-            }
-            bytes = value;
         }
 
         [NotNull]

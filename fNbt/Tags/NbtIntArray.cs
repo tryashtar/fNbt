@@ -20,21 +20,12 @@ namespace fNbt {
             get { return ints; }
             set
             {
-                int[] current_value = ints;
-                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
-                    () => SetValue(value),
-                    () => SetValue(current_value)
-                );
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                ints = value;
             }
-        }
-
-        private void SetValue(int[] value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException("value");
-            }
-            ints = value;
         }
 
         [NotNull]

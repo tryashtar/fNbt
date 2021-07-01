@@ -16,21 +16,12 @@ namespace fNbt {
             get { return stringVal; }
             set
             {
-                string current_value = stringVal;
-                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
-                    () => SetValue(value),
-                    () => SetValue(current_value)
-                );
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                stringVal = value;
             }
-        }
-
-        private void SetValue(string value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException("value");
-            }
-            stringVal = value;
         }
 
         [NotNull]

@@ -11,18 +11,7 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single byte). </summary>
-        public byte Value
-        {
-            get => _Value;
-            set {
-                byte current_value = _Value;
-                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
-                    () => _Value = value,
-                    () => _Value = current_value
-                );
-            }
-        }
-        private byte _Value;
+        public byte Value { get; set; }
 
 
         /// <summary> Creates an unnamed NbtByte tag with the default value of 0. </summary>
@@ -46,7 +35,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtByte([CanBeNull] string tagName, byte value) {
             name = tagName;
-            _Value = value;
+            Value = value;
         }
 
 
@@ -56,7 +45,7 @@ namespace fNbt {
         public NbtByte([NotNull] NbtByte other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            _Value = other.Value;
+            Value = other.Value;
         }
 
 
@@ -65,7 +54,7 @@ namespace fNbt {
                 readStream.ReadByte();
                 return false;
             }
-            _Value = readStream.ReadByte();
+            Value = readStream.ReadByte();
             return true;
         }
 

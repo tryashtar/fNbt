@@ -14,51 +14,6 @@ namespace fNbt {
         /// <summary> Type of this tag. </summary>
         public abstract NbtTagType TagType { get; }
 
-        /// <summary> Event raised when this tag or one of its children is changed. </summary>
-        public event Action<NbtTag> OnChanged;
-
-        /// <summary> Event raised when this tag has an undoable action performed on it. </summary>
-        public event Action<UndoableAction> ActionPerformed;
-
-        protected void RaiseChanged(NbtTag tag) => OnChanged?.Invoke(tag);
-        private void RaiseActionPerformed(UndoableAction action) => ActionPerformed?.Invoke(action);
-
-        /// <summary> Helper method for signaling changes to parent tags. </summary>
-        protected T PerformAction<T>(DescriptionHolder description, Func<T> action, Action undo)
-        {
-            T modified_action()
-            {
-                T before = action();
-                RaiseChangedLoop();
-                return before;
-            }
-            undo += RaiseChangedLoop;
-            var undoable = new UndoableAction<T>(description, modified_action, undo);
-            var result = undoable.Do();
-            RaiseActionPerformed(undoable);
-            return result;
-        }
-
-        /// <summary> Helper method for signaling changes to parent tags. </summary>
-        protected void PerformAction(DescriptionHolder description, Action action, Action undo)
-        {
-            action += RaiseChangedLoop;
-            undo += RaiseChangedLoop;
-            var undoable = new UndoableAction(description, action, undo);
-            undoable.Do();
-            RaiseActionPerformed(undoable);
-        }
-
-        protected void RaiseChangedLoop()
-        {
-            var tag = this;
-            while (tag != null)
-            {
-                tag.RaiseChanged(this);
-                tag = tag.Parent;
-            }
-        }
-
         /// <summary> Returns true if tags of this type have a value attached.
         /// All tags except Compound, List, and End have values. </summary>
         public bool HasValue {
@@ -83,18 +38,14 @@ namespace fNbt {
         public string Name {
             get { return name; }
             set {
-                string current_name = name;
-                if (current_name == value)
-                    return;
-                PerformAction(new DescriptionHolder("Rename {0} from {1}", this, current_name),
-                    () => SetName(value),
-                    () => SetName(current_name)
-                );
+                SetName(value);
             }
         }
 
         private void SetName(string value)
         {
+            if (name == value)
+                return;
             var parentAsCompound = Parent as NbtCompound;
             if (parentAsCompound != null)
             {
@@ -105,7 +56,6 @@ namespace fNbt {
                 }
                 else if (name != null)
                 {
-                    string current_name = name;
                     parentAsCompound.RenameTag(name, value);
                 }
             }

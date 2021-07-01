@@ -198,10 +198,10 @@ namespace fNbt {
         /// <param name="newTags"> The collection whose elements should be added to this NbtList. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="newTags"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If given tags do not match ListType, or are of mixed types. </exception>
-        protected override void DoAddRange([NotNull] IEnumerable<NbtTag> newTags) {
+        public override void AddRange([NotNull] IEnumerable<NbtTag> newTags) {
             if (newTags == null) throw new ArgumentNullException("newTags");
             foreach (NbtTag tag in newTags) {
-                DoAdd(tag);
+                Add(tag);
             }
         }
 
@@ -400,7 +400,7 @@ namespace fNbt {
         /// <param name="newTag"> The tag to insert into this NbtList. </param>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="tagIndex"/> is not a valid index in this NbtList. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
-        protected override void DoInsert(int tagIndex, [NotNull] NbtTag newTag) {
+        public override void Insert(int tagIndex, [NotNull] NbtTag newTag) {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
             }
@@ -418,7 +418,7 @@ namespace fNbt {
         /// <summary> Removes a tag at the specified index from this NbtList. </summary>
         /// <param name="index"> The zero-based index of the item to remove. </param>
         /// <exception cref="ArgumentOutOfRangeException"> <paramref name="index"/> is not a valid index in the NbtList. </exception>
-        protected override void DoRemoveAt(int index) {
+        public override void RemoveAt(int index) {
             NbtTag tag = this[index];
             tags.RemoveAt(index);
             tag.Parent = null;
@@ -431,7 +431,7 @@ namespace fNbt {
         /// <param name="newTag"> The tag to add to this NbtList. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="newTag"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If <paramref name="newTag"/> does not match ListType. </exception>
-        protected override void DoAdd([NotNull] NbtTag newTag) {
+        public override void Add([NotNull] NbtTag newTag) {
             if (newTag == null) {
                 throw new ArgumentNullException("newTag");
             } else if (newTag.Parent != null) {
@@ -452,7 +452,7 @@ namespace fNbt {
 
 
         /// <summary> Removes all tags from this NbtList. </summary>
-        protected override void DoClear() {
+        public override void Clear() {
             for (int i = 0; i < tags.Count; i++) {
                 tags[i].Parent = null;
             }
@@ -489,7 +489,7 @@ namespace fNbt {
         /// This method also returns false if tag is not found. </returns>
         /// <param name="tag"> The tag to remove from this NbtList. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="tag"/> is <c>null</c>. </exception>
-        protected override bool DoRemove([NotNull] NbtTag tag) {
+        public override bool Remove([NotNull] NbtTag tag) {
             if (tag == null) throw new ArgumentNullException("tag");
             if (!tags.Remove(tag)) {
                 return false;

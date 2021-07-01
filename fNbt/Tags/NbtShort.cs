@@ -11,19 +11,7 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single signed 16-bit integer). </summary>
-        public short Value
-        {
-            get => _Value;
-            set
-            {
-                short current_value = _Value;
-                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
-                    () => _Value = value,
-                    () => _Value = current_value
-                );
-            }
-        }
-        private short _Value;
+        public short Value { get; set; }
 
 
         /// <summary> Creates an unnamed NbtShort tag with the default value of 0. </summary>
@@ -47,7 +35,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtShort([CanBeNull] string tagName, short value) {
             name = tagName;
-            _Value = value;
+            Value = value;
         }
 
 
@@ -57,7 +45,7 @@ namespace fNbt {
         public NbtShort([NotNull] NbtShort other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            _Value = other.Value;
+            Value = other.Value;
         }
 
 
@@ -68,7 +56,7 @@ namespace fNbt {
                 readStream.ReadInt16();
                 return false;
             }
-            _Value = readStream.ReadInt16();
+            Value = readStream.ReadInt16();
             return true;
         }
 

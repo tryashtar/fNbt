@@ -21,21 +21,12 @@ namespace fNbt {
             get { return longs; }
             set
             {
-                long[] current_value = longs;
-                PerformAction(new DescriptionHolder("Change value of {0} to {1}", this, value),
-                    () => SetValue(value),
-                    () => SetValue(current_value)
-                );
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+                longs = value;
             }
-        }
-
-        private void SetValue(long[] value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException("value");
-            }
-            longs = value;
         }
 
         [NotNull]
