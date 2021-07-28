@@ -16,8 +16,8 @@ namespace fNbt
         new TValue this[int index] { get; set; }
         new TValue this[TKey key] { get; set; }
         new int Count { get; }
-        new ICollection<TKey> Keys { get; }
-        new ICollection<TValue> Values { get; }
+        new IList<TKey> Keys { get; }
+        new IList<TValue> Values { get; }
         new void Add(TKey key, TValue value);
         new void Clear();
         void Insert(int index, TKey key, TValue value);
@@ -84,7 +84,7 @@ namespace fNbt
             get { return _keyedCollection.Count; }
         }
 
-        public ICollection<TKey> Keys
+        public IList<TKey> Keys
         {
             get
             {
@@ -92,7 +92,7 @@ namespace fNbt
             }
         }
 
-        public ICollection<TValue> Values
+        public IList<TValue> Values
         {
             get
             {
