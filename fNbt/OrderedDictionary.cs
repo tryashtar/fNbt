@@ -160,6 +160,11 @@ namespace fNbt
             _keyedCollection.Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
+        public void Add(KeyValuePair<TKey, TValue> pair)
+        {
+            _keyedCollection.Add(pair);
+        }
+
         public void Clear()
         {
             _keyedCollection.Clear();
