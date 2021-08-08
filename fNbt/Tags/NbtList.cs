@@ -18,28 +18,29 @@ namespace fNbt {
         /// <summary> Gets or sets the tag type of this list. All tags in this NbtTag must be of the same type. </summary>
         /// <exception cref="ArgumentException"> If the given NbtTagType does not match the type of existing list items (for non-empty lists). </exception>
         /// <exception cref="ArgumentOutOfRangeException"> If the given NbtTagType is a recognized tag type. </exception>
-        public NbtTagType ListType {
+        public override NbtTagType ListType {
             get { return listType; }
-            set {
-                if (value == NbtTagType.End) {
-                    // Empty lists may have type "End", see: https://github.com/fragmer/fNbt/issues/12
-                    if (tags.Count > 0) {
-                        throw new ArgumentException("Only empty list tags may have TagType of End.");
-                    }
-                }else if (value < NbtTagType.Byte || (value > NbtTagType.LongArray && value != NbtTagType.Unknown)) {
-                    throw new ArgumentOutOfRangeException("value");
-                }
+        }
+
+        private void SetListType(NbtTagType value) {
+            if (value == NbtTagType.End) {
+                // Empty lists may have type "End", see: https://github.com/fragmer/fNbt/issues/12
                 if (tags.Count > 0) {
-                    NbtTagType actualType = tags[0].TagType;
-                    // We can safely assume that ALL tags have the same TagType as the first tag.
-                    if (actualType != value) {
-                        string msg = String.Format("Given NbtTagType ({0}) does not match actual element type ({1})",
-                                                   value, actualType);
-                        throw new ArgumentException(msg);
-                    }
+                    throw new ArgumentException("Only empty list tags may have TagType of End.");
                 }
-                listType = value;
+            }else if (value < NbtTagType.Byte || (value > NbtTagType.LongArray && value != NbtTagType.Unknown)) {
+                throw new ArgumentOutOfRangeException("value");
             }
+            if (tags.Count > 0) {
+                NbtTagType actualType = tags[0].TagType;
+                // We can safely assume that ALL tags have the same TagType as the first tag.
+                if (actualType != value) {
+                    string msg = String.Format("Given NbtTagType ({0}) does not match actual element type ({1})",
+                                               value, actualType);
+                    throw new ArgumentException(msg);
+                }
+            }
+            listType = value;
         }
 
         NbtTagType listType;
@@ -125,7 +126,7 @@ namespace fNbt {
         /// <exception cref="ArgumentException"> If given tags do not match <paramref name="givenListType"/>, or are of mixed types. </exception>
         public NbtList([CanBeNull] string tagName, [CanBeNull] IEnumerable<NbtTag> tags, NbtTagType givenListType) {
             name = tagName;
-            ListType = givenListType;
+            SetListType(givenListType);
 
             if (tags == null) return;
             foreach (NbtTag tag in tags) {
@@ -240,7 +241,7 @@ namespace fNbt {
                 return false;
             }
 
-            ListType = readStream.ReadTagType();
+            SetListType(readStream.ReadTagType());
 
             int length = readStream.ReadInt32();
             if (length < 0) {
@@ -301,7 +302,7 @@ namespace fNbt {
 
         internal override void SkipTag(NbtBinaryReader readStream) {
             // read list type, and make sure it's defined
-            ListType = readStream.ReadTagType();
+            SetListType(readStream.ReadTagType());
 
             int length = readStream.ReadInt32();
             if (length < 0) {
@@ -362,7 +363,7 @@ namespace fNbt {
 
         internal override void WriteData(NbtBinaryWriter writeStream) {
             if (ListType == NbtTagType.Unknown) {
-                ListType = NbtTagType.End;   
+                SetListType(NbtTagType.End);   
             }
             writeStream.Write(ListType);
             writeStream.Write(tags.Count);
@@ -538,5 +539,7 @@ namespace fNbt {
             }
             sb.Append('}');
         }
+
+        public override bool IsList => true;
     }
 }

@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> Base class for different kinds of named binary tags. </summary>
-    public abstract class NbtTag : ICloneable {
+    public abstract class NbtTag : IReadableNbt, ICloneable {
         /// <summary> Parent compound tag, either NbtList or NbtCompound, if any.
         /// May be <c>null</c> for detached tags. </summary>
         [CanBeNull]
@@ -303,6 +303,14 @@ namespace fNbt {
             }
         }
 
+        /// <summary>
+        /// Creates a read-only wrapper around this NbtTag
+        /// </summary>
+        /// <returns>A read-only wrapper</returns>
+        public ReadOnlyNbtTag AsReadOnly() {
+            return new ReadOnlyNbtTag(this);
+        }
+
         #endregion
 
 
@@ -385,6 +393,10 @@ namespace fNbt {
                 defaultIndentString = value;
             }
         }
+
+        public virtual bool IsList => false;
+        public virtual NbtTagType ListType => throw new InvalidOperationException();
+
 
         static string defaultIndentString = "  ";
     }
