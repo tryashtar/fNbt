@@ -17,15 +17,19 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
         [NotNull]
         public byte[] Value {
-            get { return bytes; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
+            get => bytes;
+            set {
                 bytes = value;
+                CascadeChanges();
             }
+        }
+
+        private void SetValue(byte[] value)
+        {
+            if (value == null) {
+                throw new ArgumentNullException("value");
+            }
+            bytes = value;
         }
 
         [NotNull]
@@ -132,18 +136,6 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtByteArray(this);
-        }
-
-
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-            sb.Append("TAG_Byte_Array");
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-            sb.AppendFormat(": [{0} bytes]", bytes.Length);
         }
     }
 }

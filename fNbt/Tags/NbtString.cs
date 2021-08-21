@@ -13,15 +13,20 @@ namespace fNbt {
         /// <summary> Value/payload of this tag (a single string). May not be <c>null</c>. </summary>
         [NotNull]
         public string Value {
-            get { return stringVal; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
+            get => stringVal;
+            set {
                 stringVal = value;
+                CascadeChanges();
             }
+        }
+
+        private void SetValue(string value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+            stringVal = value;
         }
 
         [NotNull]
@@ -95,20 +100,6 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtString(this);
-        }
-
-
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-            sb.Append("TAG_String");
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-            sb.Append(": \"");
-            sb.Append(Value);
-            sb.Append('"');
         }
     }
 }

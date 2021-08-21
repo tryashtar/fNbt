@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> Base class for different kinds of named binary tags. </summary>
-    public abstract class NbtTag : IReadableNbt, ICloneable {
+    public abstract class NbtTag : ICloneable {
         /// <summary> Parent compound tag, either NbtList or NbtCompound, if any.
         /// May be <c>null</c> for detached tags. </summary>
         [CanBeNull]
@@ -13,6 +13,18 @@ namespace fNbt {
 
         /// <summary> Type of this tag. </summary>
         public abstract NbtTagType TagType { get; }
+
+        public delegate void TagChangedEvent(NbtTag this_tag, NbtTag changed_tag);
+        public event TagChangedEvent SomethingChanged;
+        protected void CascadeChanges()
+        {
+            NbtTag tag = this;
+            while (tag != null)
+            {
+                tag.SomethingChanged?.Invoke(tag, this);
+                tag = tag.Parent;
+            }
+        }
 
         /// <summary> Returns true if tags of this type have a value attached.
         /// All tags except Compound, List, and End have values. </summary>
@@ -61,6 +73,8 @@ namespace fNbt {
             }
 
             name = value;
+
+            CascadeChanges();
         }
 
         // Used by impls to bypass setter checks (and avoid side effects) when initializing state
@@ -302,15 +316,6 @@ namespace fNbt {
                 }
             }
         }
-
-        /// <summary>
-        /// Creates a read-only wrapper around this NbtTag
-        /// </summary>
-        /// <returns>A read-only wrapper</returns>
-        public ReadOnlyNbtTag AsReadOnly() {
-            return new ReadOnlyNbtTag(this);
-        }
-
         #endregion
 
 
@@ -353,51 +358,22 @@ namespace fNbt {
             }
         }
 
-
-        /// <summary> Prints contents of this tag, and any child tags, to a string.
-        /// Indents the string using multiples of the given indentation string. </summary>
-        /// <returns> A string representing contents of this tag, and all child tags (if any). </returns>
-        public override string ToString() {
-            return ToString(DefaultIndentString);
-        }
-
-
         /// <summary> Creates a deep copy of this tag. </summary>
         /// <returns> A new NbtTag object that is a deep copy of this instance. </returns>
         public abstract object Clone();
+    }
 
-
-        /// <summary> Prints contents of this tag, and any child tags, to a string.
-        /// Indents the string using multiples of the given indentation string. </summary>
-        /// <param name="indentString"> String to be used for indentation. </param>
-        /// <returns> A string representing contents of this tag, and all child tags (if any). </returns>
-        /// <exception cref="ArgumentNullException"> <paramref name="indentString"/> is <c>null</c>. </exception>
-        [NotNull]
-        public string ToString([NotNull] string indentString) {
-            if (indentString == null) throw new ArgumentNullException("indentString");
-            var sb = new StringBuilder();
-            PrettyPrint(sb, indentString, 0);
-            return sb.ToString();
-        }
-
-
-        internal abstract void PrettyPrint([NotNull] StringBuilder sb, [NotNull] string indentString, int indentLevel);
-
-        /// <summary> String to use for indentation in NbtTag's and NbtFile's ToString() methods by default. </summary>
-        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
-        [NotNull]
-        public static string DefaultIndentString {
-            get { return defaultIndentString; }
-            set {
-                if (value == null) throw new ArgumentNullException("value");
-                defaultIndentString = value;
+    public static class NbtTagExtensions
+    {
+        public static bool IsAncestor(this NbtTag tag, NbtContainerTag potential_ancestor)
+        {
+            while (tag != null)
+            {
+                tag = tag.Parent;
+                if (tag == potential_ancestor)
+                    return true;
             }
+            return false;
         }
-
-        public virtual bool IsList => false;
-        public virtual NbtTagType ListType => throw new InvalidOperationException();
-
-
-        static string defaultIndentString = "  ";
     }
 }

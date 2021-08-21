@@ -17,15 +17,20 @@ namespace fNbt {
         [NotNull]
         public int[] Value
         {
-            get { return ints; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
+            get => ints;
+            set {
                 ints = value;
+                CascadeChanges();
             }
+        }
+
+        private void SetValue(int[] value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+            ints = value;
         }
 
         [NotNull]
@@ -135,18 +140,6 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtIntArray(this);
-        }
-
-
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-            sb.Append("TAG_Int_Array");
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-            sb.AppendFormat(": [{0} ints]", ints.Length);
         }
     }
 }

@@ -18,15 +18,20 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
         public long[] Value
         {
-            get { return longs; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException("value");
-                }
+            get => longs;
+            set {
                 longs = value;
+                CascadeChanges();
             }
+        }
+
+        private void SetValue(long[] value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+            longs = value;
         }
 
         [NotNull]
@@ -146,21 +151,6 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtLongArray(this);
-        }
-
-
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-
-            sb.Append("TAG_Long_Array");
-
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-
-            sb.AppendFormat(": [{0} longs]", Value.Length);
         }
     }
 }

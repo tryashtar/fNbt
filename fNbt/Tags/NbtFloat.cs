@@ -11,7 +11,15 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single-precision floating point number). </summary>
-        public float Value { get; set; }
+        public float Value
+        {
+            get => _Value;
+            set {
+                _Value = value;
+                CascadeChanges();
+            }
+        }
+        private float _Value;
 
 
         /// <summary> Creates an unnamed NbtFloat tag with the default value of 0f. </summary>
@@ -35,7 +43,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtFloat([CanBeNull] string tagName, float value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -45,7 +53,7 @@ namespace fNbt {
         public NbtFloat([NotNull] NbtFloat other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -54,7 +62,7 @@ namespace fNbt {
                 readStream.ReadSingle();
                 return false;
             }
-            Value = readStream.ReadSingle();
+            _Value = readStream.ReadSingle();
             return true;
         }
 
@@ -80,19 +88,6 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtFloat(this);
-        }
-
-
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-            sb.Append("TAG_Float");
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-            sb.Append(": ");
-            sb.Append(Value);
         }
     }
 }

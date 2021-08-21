@@ -11,7 +11,15 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single signed 32-bit integer). </summary>
-        public int Value { get; set; }
+        public int Value
+        {
+            get => _Value;
+            set {
+                _Value = value;
+                CascadeChanges();
+            }
+        }
+        private int _Value;
 
 
         /// <summary> Creates an unnamed NbtInt tag with the default value of 0. </summary>
@@ -35,7 +43,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtInt([CanBeNull] string tagName, int value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -45,7 +53,7 @@ namespace fNbt {
         public NbtInt([NotNull] NbtInt other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -54,7 +62,7 @@ namespace fNbt {
                 readStream.ReadInt32();
                 return false;
             }
-            Value = readStream.ReadInt32();
+            _Value = readStream.ReadInt32();
             return true;
         }
 
@@ -80,19 +88,6 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtInt(this);
-        }
-
-
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-            sb.Append("TAG_Int");
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-            sb.Append(": ");
-            sb.Append(Value);
         }
     }
 }

@@ -643,23 +643,6 @@ namespace fNbt {
         }
 
 
-        /// <summary> Prints contents of the root tag, and any child tags, to a string. </summary>
-        public override string ToString() {
-            return RootTag.ToString(NbtTag.DefaultIndentString);
-        }
-
-
-        /// <summary> Prints contents of the root tag, and any child tags, to a string.
-        /// Indents the string using multiples of the given indentation string. </summary>
-        /// <param name="indentString"> String to be used for indentation. </param>
-        /// <returns> A string representing contents of this tag, and all child tags (if any). </returns>
-        /// <exception cref="ArgumentNullException"> <paramref name="indentString"/> is <c>null</c>. </exception>
-        [NotNull]
-        public string ToString([NotNull] string indentString) {
-            return RootTag.ToString(indentString);
-        }
-
-
         const string WrongZLibHeaderMessage = "Unrecognized ZLib header. Expected 0x78";
     }
 }

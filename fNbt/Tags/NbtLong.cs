@@ -11,7 +11,15 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single signed 64-bit integer). </summary>
-        public long Value { get; set; }
+        public long Value
+        {
+            get => _Value;
+            set {
+                _Value = value;
+                CascadeChanges();
+            }
+        }
+        private long _Value;
 
 
         /// <summary> Creates an unnamed NbtLong tag with the default value of 0. </summary>
@@ -35,7 +43,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtLong(string tagName, long value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -45,7 +53,7 @@ namespace fNbt {
         public NbtLong([NotNull] NbtLong other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -56,7 +64,7 @@ namespace fNbt {
                 readStream.ReadInt64();
                 return false;
             }
-            Value = readStream.ReadInt64();
+            _Value = readStream.ReadInt64();
             return true;
         }
 
@@ -84,19 +92,6 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtLong(this);
-        }
-
-
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-            sb.Append("TAG_Long");
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-            sb.Append(": ");
-            sb.Append(Value);
         }
     }
 }

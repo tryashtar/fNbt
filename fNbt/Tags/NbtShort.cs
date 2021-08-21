@@ -11,7 +11,15 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single signed 16-bit integer). </summary>
-        public short Value { get; set; }
+        public short Value
+        {
+            get => _Value;
+            set {
+                _Value = value;
+                CascadeChanges();
+            }
+        }
+        private short _Value;
 
 
         /// <summary> Creates an unnamed NbtShort tag with the default value of 0. </summary>
@@ -35,7 +43,7 @@ namespace fNbt {
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtShort([CanBeNull] string tagName, short value) {
             name = tagName;
-            Value = value;
+            _Value = value;
         }
 
 
@@ -45,7 +53,7 @@ namespace fNbt {
         public NbtShort([NotNull] NbtShort other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            Value = other.Value;
+            _Value = other.Value;
         }
 
 
@@ -56,7 +64,7 @@ namespace fNbt {
                 readStream.ReadInt16();
                 return false;
             }
-            Value = readStream.ReadInt16();
+            _Value = readStream.ReadInt16();
             return true;
         }
 
@@ -84,19 +92,6 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtShort(this);
-        }
-
-
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-            sb.Append("TAG_Short");
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-            sb.Append(": ");
-            sb.Append(Value);
         }
     }
 }
