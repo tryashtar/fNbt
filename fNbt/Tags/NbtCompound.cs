@@ -285,6 +285,11 @@ namespace fNbt
             return TagDict.IndexOf(name);
         }
 
+        public bool Contains(string name)
+        {
+            return TagDict.ContainsKey(name);
+        }
+
         #region Reading / Writing
 
         internal static NbtTag CreateTag(NbtTagType type)
