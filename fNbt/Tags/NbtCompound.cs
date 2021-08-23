@@ -290,6 +290,13 @@ namespace fNbt
             return TagDict.ContainsKey(name);
         }
 
+        public bool Remove(string name)
+        {
+            if (TagDict.TryGetValue(name, out var result))
+                return this.Remove(result);
+            return false;
+        }
+
         #region Reading / Writing
 
         internal static NbtTag CreateTag(NbtTagType type)

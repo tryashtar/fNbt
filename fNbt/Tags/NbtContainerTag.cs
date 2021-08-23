@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 namespace fNbt
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public abstract class NbtContainerTag : NbtTag
+    public abstract class NbtContainerTag : NbtTag, IEnumerable<NbtTag>
     {
         public delegate void ChildrenChangedEvent(NbtContainerTag changed);
         public event ChildrenChangedEvent ChildrenChanged;
 
+        public abstract IEnumerable<NbtTag> Tags { get; }
         public abstract int Count { get; }
         public abstract int IndexOf(NbtTag item);
         public abstract bool Contains(NbtTag item);
-        public abstract IEnumerable<NbtTag> Tags { get; }
         protected abstract void DoInsert(int index, NbtTag item);
         protected abstract void DoAdd(NbtTag item);
         protected abstract NbtTag DoGet(int index);
@@ -24,6 +24,8 @@ namespace fNbt
         protected abstract bool DoRemove(NbtTag item);
         protected abstract void DoRemoveAt(int index);
         protected abstract void DoClear();
+        public IEnumerator<NbtTag> GetEnumerator() => Tags.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public bool CanAdd(IEnumerable<NbtTag> tags)
         {
@@ -98,7 +100,6 @@ namespace fNbt
             DoRemoveAt(index);
             FireEvents();
         }
-
         public override NbtTag this[int tagIndex]
         {
             get { return DoGet(tagIndex); }
