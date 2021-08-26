@@ -120,10 +120,10 @@ namespace fNbt
             Initialize(comparer);
         }
 
-        public OrderedDictionary(IOrderedDictionary<TKey, TValue> dictionary)
+        public OrderedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> values)
         {
             Initialize();
-            foreach (KeyValuePair<TKey, TValue> pair in dictionary)
+            foreach (KeyValuePair<TKey, TValue> pair in values)
             {
                 _keyedCollection.Add(pair);
             }
