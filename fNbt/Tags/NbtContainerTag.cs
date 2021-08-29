@@ -34,6 +34,8 @@ namespace fNbt
             return true;
         }
 
+        public abstract bool CanAddType(NbtTagType type);
+
         public virtual void ThrowIfCantAdd(IEnumerable<NbtTag> tags)
         {
             if (tags.Any(x => x is null))

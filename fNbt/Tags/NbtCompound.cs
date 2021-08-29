@@ -459,6 +459,7 @@ namespace fNbt
             if (tags.Any(x => x.Name is null))
                 throw new ArgumentException("Unnamed tag given. A compound may only contain named tags.");
         }
+        public override bool CanAddType(NbtTagType type) => true;
 
         public override int Count => TagDict.Count;
         public override int IndexOf(NbtTag item)

@@ -239,6 +239,7 @@ namespace fNbt
             if (TagList.Count > 0 && tag_types.Single() != ListType)
                 throw new ArgumentException($"Items must be of type {ListType}");
         }
+        public override bool CanAddType(NbtTagType type) => TagList.Count == 0 || type == ListType;
 
         public override int Count => TagList.Count;
         public override IEnumerable<NbtTag> Tags => TagList;
