@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a single signed 64-bit integer. </summary>
-    public sealed class NbtLong : NbtTag {
+    public sealed class NbtLong : NbtValueTag {
         /// <summary> Type of this tag (Long). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Long; }
@@ -92,6 +92,13 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtLong(this);
+        }
+
+        public override int CompareTo(NbtValueTag other)
+        {
+            if (other is not NbtLong l)
+                return 0;
+            return this.Value.CompareTo(l.Value);
         }
     }
 }

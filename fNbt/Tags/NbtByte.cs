@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a single byte. </summary>
-    public sealed class NbtByte : NbtTag {
+    public sealed class NbtByte : NbtValueTag {
         /// <summary> Type of this tag (Byte). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Byte; }
@@ -88,6 +88,13 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtByte(this);
+        }
+
+        public override int CompareTo(NbtValueTag other)
+        {
+            if (other is not NbtByte b)
+                return 0;
+            return this.Value.CompareTo(b.Value);
         }
     }
 }

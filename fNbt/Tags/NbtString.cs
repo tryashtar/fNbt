@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a single string. String is stored in UTF-8 encoding. </summary>
-    public sealed class NbtString : NbtTag {
+    public sealed class NbtString : NbtValueTag {
         /// <summary> Type of this tag (String). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.String; }
@@ -100,6 +100,13 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtString(this);
+        }
+
+        public override int CompareTo(NbtValueTag other)
+        {
+            if (other is not NbtString s)
+                return 0;
+            return this.Value.CompareTo(s.Value);
         }
     }
 }

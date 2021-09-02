@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing a double-precision floating point number. </summary>
-    public sealed class NbtDouble : NbtTag {
+    public sealed class NbtDouble : NbtValueTag {
         /// <summary> Type of this tag (Double). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.Double; }
@@ -87,6 +87,13 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtDouble(this);
+        }
+
+        public override int CompareTo(NbtValueTag other)
+        {
+            if (other is not NbtDouble d)
+                return 0;
+            return this.Value.CompareTo(d.Value);
         }
     }
 }

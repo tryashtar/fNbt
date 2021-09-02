@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of signed 32-bit integers. </summary>
-    public sealed class NbtIntArray : NbtTag {
+    public sealed class NbtIntArray : NbtArrayTag {
         static readonly int[] ZeroArray = new int[0];
 
         /// <summary> Type of this tag (ByteArray). </summary>
@@ -140,6 +141,13 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtIntArray(this);
+        }
+
+        public override bool ValueEquals(NbtArrayTag other)
+        {
+            if (other is not NbtIntArray i)
+                return false;
+            return this.Value.SequenceEqual(i.Value);
         }
     }
 }

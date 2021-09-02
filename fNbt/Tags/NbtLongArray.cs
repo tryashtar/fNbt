@@ -1,10 +1,11 @@
 using System;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of signed 64-bit integers. </summary>
-    public sealed class NbtLongArray : NbtTag {
+    public sealed class NbtLongArray : NbtArrayTag {
         /// <summary> Type of this tag (LongArray). </summary>
         public override NbtTagType TagType
         {
@@ -151,6 +152,13 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtLongArray(this);
+        }
+
+        public override bool ValueEquals(NbtArrayTag other)
+        {
+            if (other is not NbtLongArray l)
+                return false;
+            return this.Value.SequenceEqual(l.Value);
         }
     }
 }

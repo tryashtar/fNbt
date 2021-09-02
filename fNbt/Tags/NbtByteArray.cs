@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of bytes. </summary>
-    public sealed class NbtByteArray : NbtTag {
+    public sealed class NbtByteArray : NbtArrayTag {
         static readonly byte[] ZeroArray = new byte[0];
 
         /// <summary> Type of this tag (ByteArray). </summary>
@@ -136,6 +137,13 @@ namespace fNbt {
         /// <inheritdoc />
         public override object Clone() {
             return new NbtByteArray(this);
+        }
+
+        public override bool ValueEquals(NbtArrayTag other)
+        {
+            if (other is not NbtByteArray b)
+                return false;
+            return this.Value.SequenceEqual(b.Value);
         }
     }
 }
