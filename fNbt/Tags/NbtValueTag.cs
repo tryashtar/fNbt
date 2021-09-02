@@ -8,17 +8,10 @@ using System.Threading.Tasks;
 namespace fNbt
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public abstract class NbtValueTag : NbtTag, IComparable<NbtValueTag>, IEquatable<NbtValueTag>
+    public abstract class NbtValueTag : NbtTag
     {
-        public abstract int CompareTo(NbtValueTag other);
-        public override bool Equals(object obj)
-        {
-            if (obj is not NbtValueTag tag)
-                return false;
-            return Equals(tag);
-        }
-
-        public bool Equals(NbtValueTag other)
+        public abstract int CompareToValue(NbtValueTag other);
+        public bool EqualsValue(NbtValueTag other)
         {
             if (this == other)
                 return true;
@@ -26,7 +19,7 @@ namespace fNbt
                 return false;
             if (other.TagType != this.TagType)
                 return false;
-            return CompareTo(other) == 0;
+            return CompareToValue(other) == 0;
         }
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

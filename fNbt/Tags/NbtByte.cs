@@ -90,7 +90,7 @@ namespace fNbt {
             return new NbtByte(this);
         }
 
-        public override int CompareTo(NbtValueTag other)
+        public override int CompareToValue(NbtValueTag other)
         {
             if (other is not NbtByte b)
                 return 0;

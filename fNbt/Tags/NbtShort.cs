@@ -94,7 +94,7 @@ namespace fNbt {
             return new NbtShort(this);
         }
 
-        public override int CompareTo(NbtValueTag other)
+        public override int CompareToValue(NbtValueTag other)
         {
             if (other is not NbtShort s)
                 return 0;

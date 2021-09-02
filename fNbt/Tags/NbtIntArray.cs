@@ -143,7 +143,9 @@ namespace fNbt {
             return new NbtIntArray(this);
         }
 
-        public override bool ValueEquals(NbtArrayTag other)
+        public override int Count => Value.Length;
+
+        protected override bool ValueEquals(NbtArrayTag other)
         {
             if (other is not NbtIntArray i)
                 return false;

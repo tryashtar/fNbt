@@ -8,17 +8,12 @@ using System.Threading.Tasks;
 namespace fNbt
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public abstract class NbtArrayTag : NbtTag, IEquatable<NbtArrayTag>
+    public abstract class NbtArrayTag : NbtTag
     {
-        public abstract bool ValueEquals(NbtArrayTag other);
-        public override bool Equals(object obj)
-        {
-            if (obj is not NbtValueTag tag)
-                return false;
-            return Equals(tag);
-        }
+        public abstract int Count { get; }
+        protected abstract bool ValueEquals(NbtArrayTag other);
 
-        public bool Equals(NbtArrayTag other)
+        public bool EqualsArray(NbtArrayTag other)
         {
             if (this == other)
                 return true;
