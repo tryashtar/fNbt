@@ -27,25 +27,41 @@ namespace fNbt
         public IEnumerator<NbtTag> GetEnumerator() => Tags.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public bool CanAdd(IEnumerable<NbtTag> tags)
-        {
-            try { ThrowIfCantAdd(tags); }
-            catch { return false; }
-            return true;
-        }
-
         public abstract bool CanAddType(NbtTagType type);
 
-        public virtual void ThrowIfCantAdd(IEnumerable<NbtTag> tags)
+        public virtual bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason)
         {
+            reason = null;
+            if (!tags.Any())
+                return true;
             if (tags.Any(x => x is null))
-                throw new ArgumentNullException();
+            {
+                reason = new ArgumentNullException();
+                return false;
+            }
             if (tags.Any(x => x.Parent is not null))
-                throw new ArgumentException("A tag may only be added to one compound/list at a time.");
+            {
+                reason = new ArgumentException("A tag may only be added to one compound/list at a time.");
+                return false;
+            }
             if (tags.OfType<NbtContainerTag>().Any(x => x.IsAncestor(this)))
-                throw new ArgumentException("A tag cannot be added to its own descendant.");
+            {
+                reason = new ArgumentException("A tag cannot be added to its own descendant.");
+                return false;
+            }
+            return true;
         }
-        public void ThrowIfCantAdd(NbtTag tag) => ThrowIfCantAdd(new[] { tag });
+        protected void ThrowIfCantAdd(IEnumerable<NbtTag> tags)
+        {
+            if (!CanAdd(tags, out var exception))
+                throw exception;
+        }
+        protected void ThrowIfCantAdd(NbtTag tag)
+        {
+            if (!CanAdd(new[] { tag }, out var exception))
+                throw exception;
+        }
+
 
         private void FireEvents()
         {
@@ -70,6 +86,15 @@ namespace fNbt
         public void AddRange(IEnumerable<NbtTag> items)
         {
             ThrowIfCantAdd(items);
+            foreach (var item in items)
+            {
+                DoAdd(item);
+                item.Parent = this;
+            }
+            FireEvents();
+        }
+        protected void TrustedAddRange(IEnumerable<NbtTag> items)
+        {
             foreach (var item in items)
             {
                 DoAdd(item);

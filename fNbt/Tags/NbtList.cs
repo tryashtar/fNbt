@@ -67,7 +67,7 @@ namespace fNbt
         {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            AddRange(other.TagList.Select(x => (NbtTag)x.Clone()));
+            TrustedAddRange(other.TagList.Select(x => (NbtTag)x.Clone()));
         }
         #endregion
 
@@ -225,19 +225,29 @@ namespace fNbt
         #endregion
 
         #region container implementation
-        public override void ThrowIfCantAdd(IEnumerable<NbtTag> tags)
+        public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason)
         {
-            if (!tags.Any())
-                return;
-            base.ThrowIfCantAdd(tags);
+            bool first = base.CanAdd(tags, out reason);
+            if (!first)
+                return first;
 
             if (tags.Any(x => x.Name is not null))
-                throw new ArgumentException("Named tag given. A list may only contain unnamed tags.");
+            {
+                reason = new ArgumentException("Named tag given. A list may only contain unnamed tags.");
+                return false;
+            }
             var tag_types = tags.Select(x => x.TagType).Distinct();
             if (tag_types.Count() > 1)
-                throw new ArgumentException("Items must all be the same type");
+            {
+                reason = new ArgumentException("Items must all be the same type");
+                return false;
+            }
             if (TagList.Count > 0 && tag_types.Single() != ListType)
-                throw new ArgumentException($"Items must be of type {ListType}");
+            {
+                reason = new ArgumentException($"Items must be of type {ListType}");
+                return false;
+            }
+            return true;
         }
         public override bool CanAddType(NbtTagType type) => TagList.Count == 0 || type == ListType;
 

@@ -54,7 +54,7 @@ namespace fNbt
         {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
-            AddRange(other.Tags.Select(x => (NbtTag)x.Clone()));
+            TrustedAddRange(other.Tags.Select(x => (NbtTag)x.Clone()));
         }
         #endregion
 
@@ -188,7 +188,7 @@ namespace fNbt
                 }
             }
             Clear();
-            AddRange(tags);
+            TrustedAddRange(tags);
         }
 
         private void UnsortRecursive(NbtCompound reference)
@@ -225,7 +225,7 @@ namespace fNbt
         private void UnsortRoot(List<NbtTag> order)
         {
             Clear();
-            AddRange(order);
+            TrustedAddRange(order);
         }
 
         private static void SortListChildren(NbtList list, IComparer<NbtTag> sorter)
@@ -450,14 +450,18 @@ namespace fNbt
 
 
         #region container implementation
-        public override void ThrowIfCantAdd(IEnumerable<NbtTag> tags)
+        public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason)
         {
-            if (!tags.Any())
-                return;
-            base.ThrowIfCantAdd(tags);
+            bool first = base.CanAdd(tags, out reason);
+            if (!first)
+                return first;
 
             if (tags.Any(x => x.Name is null))
-                throw new ArgumentException("Unnamed tag given. A compound may only contain named tags.");
+            {
+                reason = new ArgumentException("Unnamed tag given. A compound may only contain named tags.");
+                return false;
+            }
+            return true;
         }
         public override bool CanAddType(NbtTagType type) => true;
 
