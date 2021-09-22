@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of signed 32-bit integers. </summary>
-    public sealed class NbtIntArray : NbtTag {
+    public sealed class NbtIntArray : NbtArrayTag {
         /// <summary> Type of this tag (ByteArray). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.IntArray; }
@@ -18,9 +18,7 @@ namespace fNbt {
         {
             get => ints;
             set {
-                if (value == null) {
-                    throw new ArgumentNullException(nameof(value));
-                }
+                SetValue(Value);
                 ints = value;
                 CascadeChanges();
             }
@@ -30,7 +28,7 @@ namespace fNbt {
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             ints = value;
         }

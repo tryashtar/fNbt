@@ -7,8 +7,6 @@ using JetBrains.Annotations;
 namespace fNbt {
     /// <summary> A tag containing an array of bytes. </summary>
     public sealed class NbtByteArray : NbtArrayTag {
-        static readonly byte[] ZeroArray = new byte[0];
-
         /// <summary> Type of this tag (ByteArray). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.ByteArray; }
@@ -20,7 +18,7 @@ namespace fNbt {
         public byte[] Value {
             get => bytes;
             set {
-                bytes = value;
+                SetValue(Value);
                 CascadeChanges();
             }
         }
@@ -28,7 +26,7 @@ namespace fNbt {
         private void SetValue(byte[] value)
         {
             if (value == null) {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             bytes = value;
         }

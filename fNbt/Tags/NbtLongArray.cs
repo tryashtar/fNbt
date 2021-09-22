@@ -1,10 +1,11 @@
 using System;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> A tag containing an array of signed 64-bit integers. </summary>
-    public sealed class NbtLongArray : NbtTag {
+    public sealed class NbtLongArray : NbtArrayTag {
         /// <summary> Type of this tag (LongArray). </summary>
         public override NbtTagType TagType {
             get {
@@ -16,14 +17,18 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
         [NotNull]
         public long[] Value {
-            get { return longs; }
+            get => longs;
             set {
-                if (value == null) {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                longs = value;
+                SetValue(value);
+                CascadeChanges();
             }
+        }
+
+        private void SetValue(long[] value) {
+            if (value == null) {
+                throw new ArgumentNullException(nameof(value));
+            }
+            longs = value;
         }
 
         [NotNull]
@@ -97,10 +102,10 @@ namespace fNbt {
                 return false;
             }
 
-            Value = new long[length];
+            longs = new long[length];
 
             for (int i = 0; i < length; i++) {
-                Value[i] = readStream.ReadInt64();
+                longs[i] = readStream.ReadInt64();
             }
 
             return true;
@@ -144,19 +149,12 @@ namespace fNbt {
             return new NbtLongArray(this);
         }
 
+        public override int Count => Value.Length;
 
-        internal override void PrettyPrint(StringBuilder sb, string indentString, int indentLevel) {
-            for (int i = 0; i < indentLevel; i++) {
-                sb.Append(indentString);
-            }
-
-            sb.Append("TAG_Long_Array");
-
-            if (!String.IsNullOrEmpty(Name)) {
-                sb.AppendFormat("(\"{0}\")", Name);
-            }
-
-            sb.AppendFormat(": [{0} longs]", Value.Length);
+        protected override bool ValueEquals(NbtArrayTag other) {
+            if (other is not NbtLongArray l)
+                return false;
+            return this.Value.SequenceEqual(l.Value);
         }
     }
 }

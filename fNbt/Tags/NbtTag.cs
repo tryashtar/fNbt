@@ -53,17 +53,15 @@ namespace fNbt {
                 SetName(value);
             }
         }
-
-                if (Parent is NbtCompound parentAsCompound) {
-                    if (value == null) {
-                        throw new ArgumentNullException(nameof(value),
-                                                        "Name of tags inside an NbtCompound may not be null.");
-                    } else if (name != null) {
-                        parentAsCompound.RenameTag(name, value);
-                    }
-                }
-                else if (name != null)
-                {
+        private void SetName(string value) {
+            if (name == value)
+                return;
+            var parentAsCompound = Parent as NbtCompound;
+            if (parentAsCompound != null) {
+                if (value == null) {
+                    throw new ArgumentNullException("value",
+                                                    "Name of tags inside an NbtCompound may not be null.");
+                } else if (name != null) {
                     parentAsCompound.RenameTag(name, value);
                 }
             }
@@ -356,31 +354,12 @@ namespace fNbt {
         public abstract object Clone();
     }
 
-
-        /// <summary> Prints contents of this tag, and any child tags, to a string.
-        /// Indents the string using multiples of the given indentation string. </summary>
-        /// <param name="indentString"> String to be used for indentation. </param>
-        /// <returns> A string representing contents of this tag, and all child tags (if any). </returns>
-        /// <exception cref="ArgumentNullException"> <paramref name="indentString"/> is <c>null</c>. </exception>
-        [NotNull]
-        public string ToString([NotNull] string indentString) {
-            if (indentString == null) throw new ArgumentNullException(nameof(indentString));
-            var sb = new StringBuilder();
-            PrettyPrint(sb, indentString, 0);
-            return sb.ToString();
-        }
-
-
-        internal abstract void PrettyPrint([NotNull] StringBuilder sb, [NotNull] string indentString, int indentLevel);
-
-        /// <summary> String to use for indentation in NbtTag's and NbtFile's ToString() methods by default. </summary>
-        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
-        [NotNull]
-        public static string DefaultIndentString {
-            get { return defaultIndentString; }
-            set {
-                if (value == null) throw new ArgumentNullException(nameof(value));
-                defaultIndentString = value;
+    public static class NbtTagExtensions {
+        public static bool IsAncestor(this NbtTag tag, NbtContainerTag potential_ancestor) {
+            while (tag != null) {
+                tag = tag.Parent;
+                if (tag == potential_ancestor)
+                    return true;
             }
             return false;
         }

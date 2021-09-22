@@ -402,10 +402,6 @@ namespace fNbt {
                     reader.Skip(sizeof(long) * TagLength);
                     break;
 
-                case NbtTagType.LongArray:
-                    reader.Skip(sizeof(long) * TagLength);
-                    break;
-
                 case NbtTagType.String:
                     reader.SkipString();
                     break;
@@ -653,14 +649,6 @@ namespace fNbt {
                     
                     return new NbtLongArray(TagName, longs);
 
-                case NbtTagType.LongArray:
-                    var longs = new long[TagLength];
-                    for (int i = 0; i < TagLength; i++) {
-                        longs[i] = reader.ReadInt64();
-                    }
-
-                    return new NbtLongArray(TagName, longs);
-
                 default:
                     throw new InvalidOperationException(NonValueTagError);
             }
@@ -883,53 +871,6 @@ namespace fNbt {
         }
 
         bool cacheTagValues;
-
-
-        /// <summary> Returns a String that represents the tag currently being read by this NbtReader instance.
-        /// Prints current tag's depth, ordinal number, type, name, and size (for arrays and lists). Does not print value.
-        /// Indents the tag according default indentation (NbtTag.DefaultIndentString). </summary>
-        public override string ToString() {
-            return ToString(false, NbtTag.DefaultIndentString);
-        }
-
-
-        /// <summary> Returns a String that represents the tag currently being read by this NbtReader instance.
-        /// Prints current tag's depth, ordinal number, type, name, size (for arrays and lists), and optionally value.
-        /// Indents the tag according default indentation (NbtTag.DefaultIndentString). </summary>
-        /// <param name="includeValue"> If set to <c>true</c>, also reads and prints the current tag's value. 
-        /// Note that unless CacheTagValues is set to <c>true</c>, you can only read every tag's value ONCE. </param>
-        [NotNull]
-        public string ToString(bool includeValue) {
-            return ToString(includeValue, NbtTag.DefaultIndentString);
-        }
-
-
-        /// <summary> Returns a String that represents the current NbtReader object.
-        /// Prints current tag's depth, ordinal number, type, name, size (for arrays and lists), and optionally value. </summary>
-        /// <param name="indentString"> String to be used for indentation. May be empty string, but may not be <c>null</c>. </param>
-        /// <param name="includeValue"> If set to <c>true</c>, also reads and prints the current tag's value. </param>
-        [NotNull]
-        public string ToString(bool includeValue, [NotNull] string indentString) {
-            if (indentString == null) throw new ArgumentNullException(nameof(indentString));
-            var sb = new StringBuilder();
-            for (int i = 0; i < Depth; i++) {
-                sb.Append(indentString);
-            }
-            sb.Append('#').Append(TagsRead).Append(". ").Append(TagType);
-            if (IsList) {
-                sb.Append('<').Append(ListType).Append('>');
-            }
-            if (HasLength) {
-                sb.Append('[').Append(TagLength).Append(']');
-            }
-            sb.Append(' ').Append(TagName);
-            if (includeValue && (atValue || HasValue && cacheTagValues) && TagType != NbtTagType.IntArray &&
-                TagType != NbtTagType.ByteArray && TagType != NbtTagType.LongArray) {
-                sb.Append(" = ").Append(ReadValue());
-            }
-            return sb.ToString();
-        }
-
 
         const string NoValueToReadError = "Value already read, or no value to read.",
             NonValueTagError = "Trying to read value of a non-value tag.",

@@ -575,17 +575,6 @@ namespace fNbt {
                 writer.Write(data[i]);
             }
         }
-        
-        /// <summary> Writes an unnamed long array tag, copying data from an array. </summary>
-        /// <param name="data"> A long array containing the data to write. </param>
-        /// <exception cref="NbtFormatException"> No more tags can be written -OR-
-        /// a named long array tag was expected -OR- a tag of a different type was expected -OR-
-        /// the size of a parent list has been exceeded. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="data"/> is null </exception>
-        public void WriteLongArray([NotNull] long[] data) {
-            if (data == null) throw new ArgumentNullException("data");
-            WriteLongArray(data, 0, data.Length);
-        }
 
         /// <summary> Writes an unnamed long array tag, copying data from an array. </summary>
         /// <param name="data"> A long array containing the data to write. </param>
