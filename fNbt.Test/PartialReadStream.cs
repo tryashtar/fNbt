@@ -12,7 +12,7 @@ namespace fNbt.Test {
 
 
         public PartialReadStream([NotNull] Stream baseStream, int increment) {
-            if (baseStream == null) throw new ArgumentNullException("baseStream");
+            if (baseStream == null) throw new ArgumentNullException(nameof(baseStream));
             this.baseStream = baseStream;
             this.increment = increment;
         }
@@ -62,7 +62,7 @@ namespace fNbt.Test {
 
         public override long Position {
             get { return baseStream.Position; }
-            set { baseStream.Position= value; }
+            set { baseStream.Position = value; }
         }
     }
 }

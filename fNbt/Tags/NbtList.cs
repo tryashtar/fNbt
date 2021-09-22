@@ -45,7 +45,7 @@ namespace fNbt
         public NbtList([NotNull] IEnumerable<NbtTag> tags) : this(null, tags)
         {
             // the base constructor will allow null "tags," but we don't want that in this constructor
-            if (tags == null) throw new ArgumentNullException("tags");
+            if (tags == null) throw new ArgumentNullException(nameof(tags));
         }
 
         /// <summary> Creates an NbtList with the given name and contents, and an explicitly specified ListType. </summary>
@@ -224,31 +224,31 @@ namespace fNbt
         }
         #endregion
 
-        #region container implementation
-        public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason)
-        {
-            bool first = base.CanAdd(tags, out reason);
-            if (!first)
-                return first;
-
-            if (tags.Any(x => x.Name is not null))
-            {
-                reason = new ArgumentException("Named tag given. A list may only contain unnamed tags.");
-                return false;
-            }
-            var tag_types = tags.Select(x => x.TagType).Distinct();
-            if (tag_types.Count() > 1)
-            {
-                reason = new ArgumentException("Items must all be the same type");
-                return false;
-            }
-            if (TagList.Count > 0 && tag_types.Single() != ListType)
-            {
-                reason = new ArgumentException($"Items must be of type {ListType}");
-                return false;
-            }
-            return true;
-        }
+        #region container implementation
+        public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason)
+        {
+            bool first = base.CanAdd(tags, out reason);
+            if (!first)
+                return first;
+
+            if (tags.Any(x => x.Name is not null))
+            {
+                reason = new ArgumentException("Named tag given. A list may only contain unnamed tags.");
+                return false;
+            }
+            var tag_types = tags.Select(x => x.TagType).Distinct();
+            if (tag_types.Count() > 1)
+            {
+                reason = new ArgumentException("Items must all be the same type");
+                return false;
+            }
+            if (TagList.Count > 0 && tag_types.Single() != ListType)
+            {
+                reason = new ArgumentException($"Items must be of type {ListType}");
+                return false;
+            }
+            return true;
+        }
         public override bool CanAddType(NbtTagType type) => TagList.Count == 0 || type == ListType;
 
         public override int Count => TagList.Count;

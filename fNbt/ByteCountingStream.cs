@@ -8,10 +8,12 @@ namespace fNbt {
         readonly Stream baseStream;
 
         // These are necessary to avoid counting bytes twice if ReadByte/WriteByte call Read/Write internally.
-        bool readingOneByte, writingOneByte;
+        bool readingOneByte;
+        bool writingOneByte;
 
         // These are necessary to avoid counting bytes twice if Read/Write call ReadByte/WriteByte internally.
-        bool readingManyBytes, writingManyBytes;
+        bool readingManyBytes;
+        bool writingManyBytes;
 
 
         public ByteCountingStream([NotNull] Stream stream) {

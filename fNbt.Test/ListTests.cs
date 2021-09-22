@@ -336,15 +336,15 @@ namespace fNbt.Test {
                 }
             });
             byte[] buffer = testFile.SaveToBuffer(NbtCompression.None);
-            
+
             testFile.LoadFromBuffer(buffer, 0, buffer.Length, NbtCompression.None);
 
             NbtList list1 = testFile.RootTag.Get<NbtList>("emptyList");
-            Assert.AreEqual(list1.Count,0);
+            Assert.AreEqual(list1.Count, 0);
             Assert.AreEqual(list1.ListType, NbtTagType.End);
 
             NbtList list2 = testFile.RootTag.Get<NbtList>("listyList");
-            Assert.AreEqual(list2.Count,1);
+            Assert.AreEqual(list2.Count, 1);
             Assert.AreEqual(list2.ListType, NbtTagType.List);
             Assert.AreEqual(list2.Get<NbtList>(0).Count, 0);
             Assert.AreEqual(list2.Get<NbtList>(0).ListType, NbtTagType.End);

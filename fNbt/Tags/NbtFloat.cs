@@ -23,19 +23,19 @@ namespace fNbt {
 
 
         /// <summary> Creates an unnamed NbtFloat tag with the default value of 0f. </summary>
-        public NbtFloat() {}
+        public NbtFloat() { }
 
 
         /// <summary> Creates an unnamed NbtFloat tag with the given value. </summary>
         /// <param name="value"> Value to assign to this tag. </param>
         public NbtFloat(float value)
-            : this(null, value) {}
+            : this(null, value) { }
 
 
         /// <summary> Creates an NbtFloat tag with the given name and the default value of 0f. </summary>
         /// <param name="tagName"> Name to assign to this tag. May be <c>null</c>. </param>
         public NbtFloat([CanBeNull] string tagName)
-            : this(tagName, 0) {}
+            : this(tagName, 0) { }
 
 
         /// <summary> Creates an NbtFloat tag with the given name and value. </summary>
@@ -51,7 +51,7 @@ namespace fNbt {
         /// <param name="other"> Tag to copy. May not be <c>null</c>. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="other"/> is <c>null</c>. </exception>
         public NbtFloat([NotNull] NbtFloat other) {
-            if (other == null) throw new ArgumentNullException("other");
+            if (other == null) throw new ArgumentNullException(nameof(other));
             name = other.name;
             _Value = other.Value;
         }

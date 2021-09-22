@@ -39,7 +39,7 @@ namespace fNbt {
 
         /// <summary> Creates an unnamed NbtByte tag, containing an empty array of bytes. </summary>
         public NbtByteArray()
-            : this((string)null) {}
+            : this((string)null) { }
 
 
         /// <summary> Creates an unnamed NbtByte tag, containing the given array of bytes. </summary>
@@ -48,14 +48,14 @@ namespace fNbt {
         /// <remarks> Given byte array will be cloned. To avoid unnecessary copying, call one of the other constructor
         /// overloads (that do not take a byte[]) and then set the Value property yourself. </remarks>
         public NbtByteArray([NotNull] byte[] value)
-            : this(null, value) {}
+            : this(null, value) { }
 
 
         /// <summary> Creates an NbtByte tag with the given name, containing an empty array of bytes. </summary>
         /// <param name="tagName"> Name to assign to this tag. May be <c>null</c>. </param>
         public NbtByteArray([CanBeNull] string tagName) {
             name = tagName;
-            bytes = ZeroArray;
+            bytes = Array.Empty<byte>();
         }
 
 
@@ -66,7 +66,7 @@ namespace fNbt {
         /// <remarks> Given byte array will be cloned. To avoid unnecessary copying, call one of the other constructor
         /// overloads (that do not take a byte[]) and then set the Value property yourself. </remarks>
         public NbtByteArray([CanBeNull] string tagName, [NotNull] byte[] value) {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
             name = tagName;
             bytes = (byte[])value.Clone();
         }
@@ -77,7 +77,7 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="other"/> is <c>null</c>. </exception>
         /// <remarks> Byte array of given tag will be cloned. </remarks>
         public NbtByteArray([NotNull] NbtByteArray other) {
-            if (other == null) throw new ArgumentNullException("other");
+            if (other == null) throw new ArgumentNullException(nameof(other));
             name = other.name;
             bytes = (byte[])other.Value.Clone();
         }

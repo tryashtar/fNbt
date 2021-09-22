@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -11,7 +11,7 @@ namespace fNbt {
         readonly byte[] buffer = new byte[sizeof(double)];
 
         byte[] seekBuffer;
-        const int SeekBufferSize = 8*1024;
+        const int SeekBufferSize = 8 * 1024;
         readonly bool swapNeeded;
         readonly byte[] stringConversionBuffer = new byte[64];
 
@@ -26,7 +26,7 @@ namespace fNbt {
             int type = ReadByte();
             if (type < 0) {
                 throw new EndOfStreamException();
-            } else if (type > (int) NbtTagType.LongArray) {
+            } else if (type > (int)NbtTagType.LongArray) {
                 throw new NbtFormatException("NBT tag type out of range: " + type);
             }
             return (NbtTagType)type;
@@ -109,7 +109,7 @@ namespace fNbt {
 
         public void Skip(int bytesToSkip) {
             if (bytesToSkip < 0) {
-                throw new ArgumentOutOfRangeException("bytesToSkip");
+                throw new ArgumentOutOfRangeException(nameof(bytesToSkip));
             } else if (BaseStream.CanSeek) {
                 BaseStream.Position += bytesToSkip;
             } else if (bytesToSkip != 0) {

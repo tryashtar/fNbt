@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace fNbt.Test {
     public static class TestFiles {
-        public const string DirName = "TestFiles";
+        public static readonly string DirName = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestFiles");
         public static readonly string Small = Path.Combine(DirName, "test.nbt");
         public static readonly string SmallGZip = Path.Combine(DirName, "test.nbt.gz");
         public static readonly string SmallZLib = Path.Combine(DirName, "test.nbt.z");
@@ -142,7 +142,6 @@ namespace fNbt.Test {
 
 
         public static void AssertNbtSmallFile(NbtFile file) {
-            // See TestFiles/test.nbt.txt to see the expected format
             Assert.IsInstanceOf<NbtCompound>(file.RootTag);
 
             NbtCompound root = file.RootTag;
@@ -158,12 +157,11 @@ namespace fNbt.Test {
 
 
         public static void AssertNbtBigFile(NbtFile file) {
-            // See TestFiles/bigtest.nbt.txt to see the expected format
             Assert.IsInstanceOf<NbtCompound>(file.RootTag);
 
             NbtCompound root = file.RootTag;
             Assert.AreEqual("Level", root.Name);
-            Assert.AreEqual(12, root.Count);
+            Assert.AreEqual(13, root.Count);
 
             Assert.IsInstanceOf<NbtLong>(root["longTest"]);
             NbtTag node = root["longTest"];
@@ -286,7 +284,7 @@ namespace fNbt.Test {
 
             // Values are: the first 1000 values of (n*n*255+n*7)%100, starting with n=0 (0, 62, 34, 16, 8, ...)
             for (int n = 0; n < 1000; n++) {
-                Assert.AreEqual((n*n*255 + n*7)%100, ((NbtByteArray)node)[n]);
+                Assert.AreEqual((n * n * 255 + n * 7) % 100, ((NbtByteArray)node)[n]);
             }
 
             Assert.IsInstanceOf<NbtDouble>(root["doubleTest"]);
@@ -297,9 +295,19 @@ namespace fNbt.Test {
             Assert.IsInstanceOf<NbtIntArray>(root["intArrayTest"]);
             var intArrayTag = root.Get<NbtIntArray>("intArrayTest");
             Assert.IsNotNull(intArrayTag);
+            Assert.AreEqual(10, intArrayTag.Value.Length);
             var rand = new Random(0);
             for (int i = 0; i < 10; i++) {
                 Assert.AreEqual(rand.Next(), intArrayTag.Value[i]);
+            }
+
+            Assert.IsInstanceOf<NbtLongArray>(root["longArrayTest"]);
+            var longArrayTag = root.Get<NbtLongArray>("longArrayTest");
+            Assert.IsNotNull(longArrayTag);
+            Assert.AreEqual(5, longArrayTag.Value.Length);
+            var rand2 = new Random(0);
+            for (int i = 0; i < 5; i++) {
+                Assert.AreEqual(((long)rand2.Next() << 32) | (uint)rand2.Next(), longArrayTag.Value[i]);
             }
         }
 
@@ -370,6 +378,11 @@ namespace fNbt.Test {
             Assert.AreEqual("intArray", node.Name);
             CollectionAssert.AreEqual(new[] { 20, 21, 22 }, node.IntArrayValue);
             
+            Assert.IsInstanceOf<NbtLongArray>(root["longArray"]);
+            node = root["longArray"];
+            Assert.AreEqual("longArray", node.Name);
+            CollectionAssert.AreEqual(new long[] { 200, 210, 220 }, node.LongArrayValue);
+
             Assert.IsInstanceOf<NbtLongArray>(root["longArray"]);
             node = root["longArray"];
             Assert.AreEqual("longArray", node.Name);
