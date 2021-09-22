@@ -233,6 +233,7 @@ namespace fNbt.Test {
 
         void ReadRootTagInternal(String fileName, NbtCompression compression) {
             Assert.Throws<ArgumentOutOfRangeException>(() => NbtFile.ReadRootTagName(fileName, compression, true, -1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => NbtFile.ReadRootTagName(fileName, (NbtCompression)255, true, 0));
 
             Assert.AreEqual("Level", NbtFile.ReadRootTagName(fileName));
             Assert.AreEqual("Level", NbtFile.ReadRootTagName(fileName, compression, true, 0));
@@ -271,7 +272,7 @@ namespace fNbt.Test {
         [Test]
         public void HugeNbtFileTest() {
             // Tests writing byte arrays that exceed the max NbtBinaryWriter chunk size
-            byte[] val = new byte[5*1024*1024];
+            byte[] val = new byte[5 * 1024 * 1024];
             NbtCompound root = new NbtCompound("root") {
                 new NbtByteArray("payload1") {
                     Value = val

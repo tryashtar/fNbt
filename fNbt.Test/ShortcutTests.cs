@@ -18,6 +18,7 @@ namespace fNbt.Test {
             Assert.AreEqual(250L, test.LongValue);
             Assert.AreEqual(250, test.ShortValue);
             Assert.AreEqual("250", test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
 
@@ -36,6 +37,7 @@ namespace fNbt.Test {
             Assert.Throws<InvalidCastException>(() => dummy = test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
 
@@ -53,6 +55,7 @@ namespace fNbt.Test {
             Assert.Throws<InvalidCastException>(() => dummy = test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsFalse(test.HasValue);
         }
 
@@ -70,6 +73,7 @@ namespace fNbt.Test {
             Assert.Throws<InvalidCastException>(() => dummy = test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.AreEqual((0.4931287132182315).ToString(CultureInfo.InvariantCulture), test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
 
@@ -87,6 +91,7 @@ namespace fNbt.Test {
             Assert.Throws<InvalidCastException>(() => dummy = test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.AreEqual((0.49823147f).ToString(CultureInfo.InvariantCulture), test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
 
@@ -104,6 +109,7 @@ namespace fNbt.Test {
             Assert.AreEqual(2147483647L, test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.AreEqual("2147483647", test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
 
@@ -122,6 +128,7 @@ namespace fNbt.Test {
             Assert.Throws<InvalidCastException>(() => dummy = test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
 
@@ -158,6 +165,7 @@ namespace fNbt.Test {
             Assert.Throws<InvalidCastException>(() => dummy = test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsFalse(test.HasValue);
         }
 
@@ -175,6 +183,7 @@ namespace fNbt.Test {
             Assert.AreEqual(9223372036854775807, test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.AreEqual("9223372036854775807", test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
 
@@ -192,6 +201,7 @@ namespace fNbt.Test {
             Assert.AreEqual(32767L, test.LongValue);
             Assert.AreEqual(32767, test.ShortValue);
             Assert.AreEqual("32767", test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
 
@@ -209,6 +219,26 @@ namespace fNbt.Test {
             Assert.Throws<InvalidCastException>(() => dummy = test.LongValue);
             Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
             Assert.AreEqual("HELLO WORLD THIS IS A TEST STRING ÅÄÖ!", test.StringValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongArrayValue);
+            Assert.IsTrue(test.HasValue);
+        }
+
+
+        [Test]
+        public void NbtLongArrayTest() {
+            object dummy;
+            long[] longs = { 1111, 2222, 3333, 4444, 5555 };
+            NbtTag test = new NbtLongArray(longs);
+            Assert.Throws<InvalidCastException>(() => dummy = test.ByteArrayValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.ByteValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.DoubleValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.FloatValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.IntArrayValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.IntValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.LongValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.ShortValue);
+            Assert.Throws<InvalidCastException>(() => dummy = test.StringValue);
+            CollectionAssert.AreEqual(longs, test.LongArrayValue);
             Assert.IsTrue(test.HasValue);
         }
     }

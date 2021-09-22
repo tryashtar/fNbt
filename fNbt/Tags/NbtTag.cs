@@ -53,21 +53,15 @@ namespace fNbt {
                 SetName(value);
             }
         }
-
-        private void SetName(string value)
-        {
+        private void SetName(string value) {
             if (name == value)
                 return;
             var parentAsCompound = Parent as NbtCompound;
-            if (parentAsCompound != null)
-            {
-                if (value == null)
-                {
+            if (parentAsCompound != null) {
+                if (value == null) {
                     throw new ArgumentNullException("value",
                                                     "Name of tags inside an NbtCompound may not be null.");
-                }
-                else if (name != null)
-                {
+                } else if (name != null) {
                     parentAsCompound.RenameTag(name, value);
                 }
             }
@@ -88,8 +82,7 @@ namespace fNbt {
                 if (Parent == null) {
                     return Name ?? "";
                 }
-                var parentAsList = Parent as NbtList;
-                if (parentAsList != null) {
+                if (Parent is NbtList parentAsList) {
                     return parentAsList.Path + '[' + parentAsList.IndexOf(this) + ']';
                 } else {
                     return Parent.Path + '.' + Name;
@@ -278,10 +271,8 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as a long array.
         /// Only supported by NbtLongArray tags. </summary>
         /// <exception cref="InvalidCastException"> When used on a tag other than NbtLongArray. </exception>
-        public long[] LongArrayValue
-        {
-            get
-            {
+        public long[] LongArrayValue {
+            get {
                 if (TagType == NbtTagType.LongArray) {
                     return ((NbtLongArray)this).Value;
                 } else {
@@ -363,12 +354,9 @@ namespace fNbt {
         public abstract object Clone();
     }
 
-    public static class NbtTagExtensions
-    {
-        public static bool IsAncestor(this NbtTag tag, NbtContainerTag potential_ancestor)
-        {
-            while (tag != null)
-            {
+    public static class NbtTagExtensions {
+        public static bool IsAncestor(this NbtTag tag, NbtContainerTag potential_ancestor) {
+            while (tag != null) {
                 tag = tag.Parent;
                 if (tag == potential_ancestor)
                     return true;

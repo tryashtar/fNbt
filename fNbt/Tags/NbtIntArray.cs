@@ -6,8 +6,6 @@ using JetBrains.Annotations;
 namespace fNbt {
     /// <summary> A tag containing an array of signed 32-bit integers. </summary>
     public sealed class NbtIntArray : NbtArrayTag {
-        static readonly int[] ZeroArray = new int[0];
-
         /// <summary> Type of this tag (ByteArray). </summary>
         public override NbtTagType TagType {
             get { return NbtTagType.IntArray; }
@@ -20,6 +18,7 @@ namespace fNbt {
         {
             get => ints;
             set {
+                SetValue(Value);
                 ints = value;
                 CascadeChanges();
             }
@@ -29,7 +28,7 @@ namespace fNbt {
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
             ints = value;
         }
@@ -40,7 +39,7 @@ namespace fNbt {
 
         /// <summary> Creates an unnamed NbtIntArray tag, containing an empty array of ints. </summary>
         public NbtIntArray()
-            : this((string)null) {}
+            : this((string)null) { }
 
 
         /// <summary> Creates an unnamed NbtIntArray tag, containing the given array of ints. </summary>
@@ -49,14 +48,14 @@ namespace fNbt {
         /// <remarks> Given int array will be cloned. To avoid unnecessary copying, call one of the other constructor
         /// overloads (that do not take a int[]) and then set the Value property yourself. </remarks>
         public NbtIntArray([NotNull] int[] value)
-            : this(null, value) {}
+            : this(null, value) { }
 
 
         /// <summary> Creates an NbtIntArray tag with the given name, containing an empty array of ints. </summary>
         /// <param name="tagName"> Name to assign to this tag. May be <c>null</c>. </param>
         public NbtIntArray([CanBeNull] string tagName) {
             name = tagName;
-            ints = ZeroArray;
+            ints = Array.Empty<int>();
         }
 
 
@@ -67,7 +66,7 @@ namespace fNbt {
         /// <remarks> Given int array will be cloned. To avoid unnecessary copying, call one of the other constructor
         /// overloads (that do not take a int[]) and then set the Value property yourself. </remarks>
         public NbtIntArray([CanBeNull] string tagName, [NotNull] int[] value) {
-            if (value == null) throw new ArgumentNullException("value");
+            if (value == null) throw new ArgumentNullException(nameof(value));
             name = tagName;
             ints = (int[])value.Clone();
         }
@@ -78,7 +77,7 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="other"/> is <c>null</c>. </exception>
         /// <remarks> Int array of given tag will be cloned. </remarks>
         public NbtIntArray([NotNull] NbtIntArray other) {
-            if (other == null) throw new ArgumentNullException("other");
+            if (other == null) throw new ArgumentNullException(nameof(other));
             name = other.name;
             ints = (int[])other.Value.Clone();
         }
@@ -101,7 +100,7 @@ namespace fNbt {
             }
 
             if (readStream.Selector != null && !readStream.Selector(this)) {
-                readStream.Skip(length*sizeof(int));
+                readStream.Skip(length * sizeof(int));
                 return false;
             }
 
@@ -118,7 +117,7 @@ namespace fNbt {
             if (length < 0) {
                 throw new NbtFormatException("Negative length given in TAG_Int_Array");
             }
-            readStream.Skip(length*sizeof(int));
+            readStream.Skip(length * sizeof(int));
         }
 
 

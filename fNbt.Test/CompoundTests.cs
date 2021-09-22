@@ -107,6 +107,7 @@ namespace fNbt.Test {
             Assert.Throws<InvalidOperationException>(() => nestedInt[0] = nestedInt);
 
             // Trying to use string indexers on non-NbtCompound tags
+            Assert.Throws<InvalidOperationException>(() => dummyTag = childList["test"]);
             Assert.Throws<InvalidOperationException>(() => childList["test"] = nestedInt);
             Assert.Throws<InvalidOperationException>(() => nestedInt["test"] = nestedInt);
 

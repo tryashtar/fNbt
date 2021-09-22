@@ -67,6 +67,14 @@ namespace fNbt.Test {
             CollectionAssert.AreEqual(longArrTag.Value, longArrTagClone.Value);
             Assert.Throws<ArgumentNullException>(() => new NbtLongArray((NbtLongArray)null));
 
+            NbtLongArray longArrTag = new NbtLongArray("longArrTag", new long[] { 1, 2, 3, 4 });
+            NbtLongArray longArrTagClone = (NbtLongArray)longArrTag.Clone();
+            Assert.AreNotSame(longArrTag, longArrTagClone);
+            Assert.AreEqual(longArrTag.Name, longArrTagClone.Name);
+            Assert.AreNotSame(longArrTag.Value, longArrTagClone.Value);
+            CollectionAssert.AreEqual(longArrTag.Value, longArrTagClone.Value);
+            Assert.Throws<ArgumentNullException>(() => new NbtLongArray((NbtLongArray)null));
+
             NbtList listTag = new NbtList("listTag", new NbtTag[] { new NbtByte(1) });
             NbtList listTagClone = (NbtList)listTag.Clone();
             Assert.AreNotSame(listTag, listTagClone);

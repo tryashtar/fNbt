@@ -462,7 +462,7 @@ namespace fNbt
                 return false;
             }
             return true;
-        }
+        }
         public override bool CanAddType(NbtTagType type) => true;
 
         public override int Count => TagDict.Count;

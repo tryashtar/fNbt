@@ -8,7 +8,7 @@ namespace fNbt {
     /// while taking care of endianness and string encoding, and counting bytes written. </summary>
     internal sealed unsafe class NbtBinaryWriter {
         // Write at most 4 MiB at a time.
-        public const int MaxWriteChunk = 4*1024*1024;
+        public const int MaxWriteChunk = 4 * 1024 * 1024;
 
         // Encoding can be shared among all instances of NbtBinaryWriter, because it is stateless.
         static readonly UTF8Encoding Encoding = new UTF8Encoding(false, true);
@@ -29,7 +29,7 @@ namespace fNbt {
         const int BufferSize = 256;
 
         // UTF8 characters use at most 4 bytes each.
-        const int MaxBufferedStringLength = BufferSize/4;
+        const int MaxBufferedStringLength = BufferSize / 4;
 
         // Each NbtBinaryWriter needs to have its own instance of the buffer.
         readonly byte[] buffer = new byte[BufferSize];
@@ -39,8 +39,8 @@ namespace fNbt {
 
 
         public NbtBinaryWriter([NotNull] Stream input, bool bigEndian) {
-            if (input == null) throw new ArgumentNullException("input");
-            if (!input.CanWrite) throw new ArgumentException("Given stream must be writable", "input");
+            if (input == null) throw new ArgumentNullException(nameof(input));
+            if (!input.CanWrite) throw new ArgumentException("Given stream must be writable", nameof(input));
             stream = input;
             swapNeeded = (BitConverter.IsLittleEndian == bigEndian);
         }
@@ -163,7 +163,7 @@ namespace fNbt {
         // Based on BinaryWriter.Write(String)
         public void Write([NotNull] string value) {
             if (value == null) {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             // Write out string length (as number of bytes)
