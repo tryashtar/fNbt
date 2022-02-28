@@ -90,6 +90,8 @@ namespace fNbt
                 {
                     throw new ArgumentException("Cannot add tag to itself");
                 }
+                if (TagDict.TryGetValue(tagName, out var existing))
+                    existing.Parent = null;
                 TagDict[tagName] = value;
                 value.Parent = this;
             }
