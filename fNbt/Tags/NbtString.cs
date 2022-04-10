@@ -19,17 +19,8 @@ namespace fNbt {
                     throw new ArgumentNullException(nameof(value));
                 }
                 stringVal = value;
-                CascadeChanges();
+                OnPropertyChanged();
             }
-        }
-
-        private void SetValue(string value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException("value");
-            }
-            stringVal = value;
         }
 
         [NotNull]

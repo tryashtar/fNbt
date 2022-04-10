@@ -62,26 +62,19 @@ namespace fNbt
                 throw exception;
         }
 
-
-        private void FireEvents()
-        {
-            ChildrenChanged?.Invoke(this);
-            CascadeChanges();
-        }
-
         public void Insert(int index, NbtTag item)
         {
             ThrowIfCantAdd(item);
             DoInsert(index, item);
             item.Parent = this;
-            FireEvents();
+            OnPropertyChanged(nameof(Tags));
         }
         public void Add(NbtTag item)
         {
             ThrowIfCantAdd(item);
             DoAdd(item);
             item.Parent = this;
-            FireEvents();
+            OnPropertyChanged(nameof(Tags));
         }
         public void AddRange(IEnumerable<NbtTag> items)
         {
@@ -91,7 +84,7 @@ namespace fNbt
                 DoAdd(item);
                 item.Parent = this;
             }
-            FireEvents();
+            OnPropertyChanged(nameof(Tags));
         }
         protected void TrustedAddRange(IEnumerable<NbtTag> items)
         {
@@ -100,7 +93,7 @@ namespace fNbt
                 DoAdd(item);
                 item.Parent = this;
             }
-            FireEvents();
+            OnPropertyChanged(nameof(Tags));
         }
         public void Clear()
         {
@@ -109,14 +102,14 @@ namespace fNbt
                 tag.Parent = null;
             }
             DoClear();
-            FireEvents();
+            OnPropertyChanged(nameof(Tags));
         }
         public bool Remove(NbtTag item)
         {
             if (DoRemove(item))
             {
                 item.Parent = null;
-                FireEvents();
+                OnPropertyChanged(nameof(Tags));
                 return true;
             }
             return false;
@@ -125,7 +118,7 @@ namespace fNbt
         {
             DoGet(index).Parent = null;
             DoRemoveAt(index);
-            FireEvents();
+            OnPropertyChanged(nameof(Tags));
         }
         public override NbtTag this[int tagIndex]
         {
@@ -136,7 +129,7 @@ namespace fNbt
                 DoGet(tagIndex).Parent = null;
                 DoSet(tagIndex, value);
                 value.Parent = this;
-                FireEvents();
+                OnPropertyChanged(nameof(Tags));
             }
         }
 

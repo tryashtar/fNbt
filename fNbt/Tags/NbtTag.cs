@@ -1,11 +1,13 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> Base class for different kinds of named binary tags. </summary>
-    public abstract class NbtTag : ICloneable {
+    public abstract class NbtTag : ICloneable, INotifyPropertyChanged {
         /// <summary> Parent compound tag, either NbtList or NbtCompound, if any.
         /// May be <c>null</c> for detached tags. </summary>
         [CanBeNull]
@@ -14,16 +16,9 @@ namespace fNbt {
         /// <summary> Type of this tag. </summary>
         public abstract NbtTagType TagType { get; }
 
-        public delegate void TagChangedEvent(NbtTag this_tag, NbtTag changed_tag);
-        public event TagChangedEvent SomethingChanged;
-        protected void CascadeChanges()
-        {
-            NbtTag tag = this;
-            while (tag != null)
-            {
-                tag.SomethingChanged?.Invoke(tag, this);
-                tag = tag.Parent;
-            }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary> Returns true if tags of this type have a value attached.
@@ -50,45 +45,24 @@ namespace fNbt {
         public string Name {
             get { return name; }
             set {
-                SetName(value);
-            }
-        }
-        private void SetName(string value) {
-            if (name == value)
-                return;
-            var parentAsCompound = Parent as NbtCompound;
-            if (parentAsCompound != null) {
-                if (value == null) {
-                    throw new ArgumentNullException("value",
-                                                    "Name of tags inside an NbtCompound may not be null.");
-                } else if (name != null) {
-                    parentAsCompound.RenameTag(name, value);
+                if (name == value)
+                    return;
+                var parentAsCompound = Parent as NbtCompound;
+                if (parentAsCompound != null) {
+                    if (value == null) {
+                        throw new ArgumentNullException("value",
+                                                        "Name of tags inside an NbtCompound may not be null.");
+                    } else if (name != null) {
+                        parentAsCompound.RenameTag(name, value);
+                    }
                 }
+                name = value;
+                OnPropertyChanged();
             }
-
-            name = value;
-
-            CascadeChanges();
         }
 
         // Used by impls to bypass setter checks (and avoid side effects) when initializing state
         internal string name;
-
-        /// <summary> Gets the full name of this tag, including all parent tag names, separated by dots. 
-        /// Unnamed tags show up as empty strings. </summary>
-        [NotNull]
-        public string Path {
-            get {
-                if (Parent == null) {
-                    return Name ?? "";
-                }
-                if (Parent is NbtList parentAsList) {
-                    return parentAsList.Path + '[' + parentAsList.IndexOf(this) + ']';
-                } else {
-                    return Parent.Path + '.' + Name;
-                }
-            }
-        }
 
         internal abstract bool ReadTag([NotNull] NbtBinaryReader readStream);
 

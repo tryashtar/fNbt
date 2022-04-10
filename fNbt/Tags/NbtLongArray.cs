@@ -19,16 +19,12 @@ namespace fNbt {
         public long[] Value {
             get => longs;
             set {
-                SetValue(value);
-                CascadeChanges();
+                if (value == null) {
+                    throw new ArgumentNullException(nameof(value));
+                }
+                longs = value;
+                OnPropertyChanged();
             }
-        }
-
-        private void SetValue(long[] value) {
-            if (value == null) {
-                throw new ArgumentNullException(nameof(value));
-            }
-            longs = value;
         }
 
         [NotNull]

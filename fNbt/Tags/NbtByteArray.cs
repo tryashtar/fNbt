@@ -18,17 +18,12 @@ namespace fNbt {
         public byte[] Value {
             get => bytes;
             set {
-                SetValue(Value);
-                CascadeChanges();
+                if (value == null) {
+                    throw new ArgumentNullException(nameof(value));
+                }
+                bytes = value;
+                OnPropertyChanged();
             }
-        }
-
-        private void SetValue(byte[] value)
-        {
-            if (value == null) {
-                throw new ArgumentNullException(nameof(value));
-            }
-            bytes = value;
         }
 
         [NotNull]

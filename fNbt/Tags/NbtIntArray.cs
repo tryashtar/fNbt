@@ -18,19 +18,12 @@ namespace fNbt {
         {
             get => ints;
             set {
-                SetValue(Value);
+                if (value == null) {
+                    throw new ArgumentNullException(nameof(value));
+                }
                 ints = value;
-                CascadeChanges();
+                OnPropertyChanged();
             }
-        }
-
-        private void SetValue(int[] value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-            ints = value;
         }
 
         [NotNull]

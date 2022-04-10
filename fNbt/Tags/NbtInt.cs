@@ -16,7 +16,7 @@ namespace fNbt {
             get => _Value;
             set {
                 _Value = value;
-                CascadeChanges();
+                OnPropertyChanged();
             }
         }
         private int _Value;
