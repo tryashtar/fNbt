@@ -350,7 +350,7 @@ namespace fNbt
 
                 NbtTag newTag = CreateTag(nextTag);
                 newTag.Parent = this;
-                newTag.Name = readStream.ReadString();
+                newTag.name = readStream.ReadString();
                 if (newTag.ReadTag(readStream))
                 {
                     // ReSharper disable AssignNullToNotNullAttribute

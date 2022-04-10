@@ -363,7 +363,7 @@ namespace fNbt {
             };
 
             var rootValue = NbtCompound.CreateTag((NbtTagType)firstByte);
-            rootValue.Name = reader.ReadString();
+            rootValue.name = reader.ReadString();
             rootValue.ReadTag(reader);
             RootTag = rootValue;
         }
