@@ -74,7 +74,8 @@ namespace fNbt {
                 } else if (value.Name != tagName) {
                     if (value.Name == null)
                         value.Name = tagName;
-                    throw new ArgumentException("Given tag name must match tag's actual name.");
+                    else
+                        throw new ArgumentException("Given tag name must match tag's actual name.");
                 }
                 TagDict[tagName] = value;
                 value.Parent = this;
