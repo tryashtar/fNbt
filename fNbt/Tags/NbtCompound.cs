@@ -7,11 +7,9 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace fNbt
-{
+namespace fNbt {
     /// <summary> A tag containing a set of other named tags. Order is not guaranteed. </summary>
-    public sealed class NbtCompound : NbtContainerTag
-    {
+    public sealed class NbtCompound : NbtContainerTag {
         /// <summary> Type of this tag (Compound). </summary>
         public override NbtTagType TagType => NbtTagType.Compound;
 
@@ -23,8 +21,7 @@ namespace fNbt
 
         /// <summary> Creates an empty NbtCompound tag with the given name. </summary>
         /// <param name="tagName"> Name to assign to this tag. May be <c>null</c>. </param>
-        public NbtCompound([CanBeNull] string tagName)
-        {
+        public NbtCompound([CanBeNull] string tagName) {
             name = tagName;
         }
 
@@ -40,8 +37,7 @@ namespace fNbt
         /// <param name="tags"> Collection of tags to assign to this tag's Value. May not be null </param>
         /// <exception cref="ArgumentNullException"> <paramref name="tags"/> is <c>null</c>, or one of the tags is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If some of the given tags were not named, or two tags with the same name were given. </exception>
-        public NbtCompound([CanBeNull] string tagName, [NotNull] IEnumerable<NbtTag> tags)
-        {
+        public NbtCompound([CanBeNull] string tagName, [NotNull] IEnumerable<NbtTag> tags) {
             if (tags == null) throw new ArgumentNullException("tags");
             name = tagName;
             AddRange(tags);
@@ -50,8 +46,7 @@ namespace fNbt
         /// <summary> Creates a deep copy of given NbtCompound. </summary>
         /// <param name="other"> An existing NbtCompound to copy. May not be <c>null</c>. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="other"/> is <c>null</c>. </exception>
-        public NbtCompound([NotNull] NbtCompound other)
-        {
+        public NbtCompound([NotNull] NbtCompound other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
             TrustedAddRange(other.Tags.Select(x => (NbtTag)x.Clone()));
@@ -64,30 +59,19 @@ namespace fNbt
         /// <exception cref="ArgumentNullException"> <paramref name="tagName"/> is <c>null</c>; or if trying to assign null value. </exception>
         /// <exception cref="ArgumentException"> <paramref name="tagName"/> does not match the given tag's actual name;
         /// or given tag already has a Parent. </exception>
-        public override NbtTag this[[NotNull] string tagName]
-        {
+        public override NbtTag this[[NotNull] string tagName] {
             [CanBeNull]
             get { return Get<NbtTag>(tagName); }
-            set
-            {
-                if (tagName == null)
-                {
+            set {
+                if (tagName == null) {
                     throw new ArgumentNullException("tagName");
-                }
-                else if (value == null)
-                {
+                } else if (value == null) {
                     throw new ArgumentNullException("value");
-                }
-                else if (value.Parent != null)
-                {
+                } else if (value.Parent != null) {
                     throw new ArgumentException("A tag may only be added to one compound/list at a time.");
-                }
-                else if (value == this)
-                {
+                } else if (value == this) {
                     throw new ArgumentException("Cannot add tag to itself");
-                }
-                else if (value.Name != tagName)
-                {
+                } else if (value.Name != tagName) {
                     if (value.Name == null)
                         value.Name = tagName;
                     throw new ArgumentException("Given tag name must match tag's actual name.");
@@ -104,11 +88,9 @@ namespace fNbt
         /// <exception cref="ArgumentNullException"> <paramref name="tagName"/> is <c>null</c>. </exception>
         /// <exception cref="InvalidCastException"> If tag could not be cast to the desired tag. </exception>
         [CanBeNull]
-        public T Get<T>([NotNull] string tagName) where T : NbtTag
-        {
+        public T Get<T>([NotNull] string tagName) where T : NbtTag {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (TagDict.ContainsKey(tagName))
-            {
+            if (TagDict.ContainsKey(tagName)) {
                 return (T)TagDict[tagName];
             }
             return null;
@@ -120,11 +102,9 @@ namespace fNbt
         /// <exception cref="ArgumentNullException"> <paramref name="tagName"/> is <c>null</c>. </exception>
         /// <exception cref="InvalidCastException"> If tag could not be cast to the desired tag. </exception>
         [CanBeNull]
-        public NbtTag Get([NotNull] string tagName)
-        {
+        public NbtTag Get([NotNull] string tagName) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (TagDict.ContainsKey(tagName))
-            {
+            if (TagDict.ContainsKey(tagName)) {
                 return TagDict[tagName];
             }
             return null;
@@ -138,16 +118,12 @@ namespace fNbt
         /// <returns> true if the NbtCompound contains a tag with the specified name; otherwise, false. </returns>
         /// <exception cref="ArgumentNullException"> <paramref name="tagName"/> is <c>null</c>. </exception>
         /// <exception cref="InvalidCastException"> If tag could not be cast to the desired tag. </exception>
-        public bool TryGet<T>([NotNull] string tagName, out T result) where T : NbtTag
-        {
+        public bool TryGet<T>([NotNull] string tagName, out T result) where T : NbtTag {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (TagDict.ContainsKey(tagName))
-            {
+            if (TagDict.ContainsKey(tagName)) {
                 result = (T)TagDict[tagName];
                 return true;
-            }
-            else
-            {
+            } else {
                 result = null;
                 return false;
             }
@@ -160,29 +136,22 @@ namespace fNbt
         /// <returns> true if the NbtCompound contains a tag with the specified name; otherwise, false. </returns>
         /// <exception cref="ArgumentNullException"> <paramref name="tagName"/> is <c>null</c>. </exception>
         /// <exception cref="InvalidCastException"> If tag could not be cast to the desired tag. </exception>
-        public bool TryGet([NotNull] string tagName, out NbtTag result)
-        {
+        public bool TryGet([NotNull] string tagName, out NbtTag result) {
             if (tagName == null) throw new ArgumentNullException("tagName");
-            if (TagDict.ContainsKey(tagName))
-            {
+            if (TagDict.ContainsKey(tagName)) {
                 result = TagDict[tagName];
                 return true;
-            }
-            else
-            {
+            } else {
                 result = null;
                 return false;
             }
         }
 
         #region sorting
-        public void Sort(IComparer<NbtTag> sorter, bool recursive)
-        {
+        public void Sort(IComparer<NbtTag> sorter, bool recursive) {
             var tags = Tags.OrderBy(x => x, sorter).ToList();
-            if (recursive)
-            {
-                foreach (var tag in tags)
-                {
+            if (recursive) {
+                foreach (var tag in tags) {
                     if (tag is NbtCompound sub)
                         sub.Sort(sorter, true);
                     else if (tag is NbtList list)
@@ -193,11 +162,9 @@ namespace fNbt
             TrustedAddRange(tags);
         }
 
-        private void UnsortRecursive(NbtCompound reference)
-        {
+        private void UnsortRecursive(NbtCompound reference) {
             var order = Tags.OrderBy(x => reference.IndexOf(x.Name)).ToList();
-            foreach (var tag in order)
-            {
+            foreach (var tag in order) {
                 if (tag is NbtCompound sub)
                     sub.UnsortRecursive((NbtCompound)reference[tag.Name]);
                 else if (tag is NbtList list)
@@ -206,60 +173,44 @@ namespace fNbt
             UnsortRoot(order);
         }
 
-        private static void UnsortListChildren(NbtList list, NbtList reference)
-        {
-            if (list.ListType == NbtTagType.Compound)
-            {
-                for (int i = 0; i < list.Count; i++)
-                {
+        private static void UnsortListChildren(NbtList list, NbtList reference) {
+            if (list.ListType == NbtTagType.Compound) {
+                for (int i = 0; i < list.Count; i++) {
                     ((NbtCompound)list[i]).UnsortRecursive((NbtCompound)reference[i]);
                 }
-            }
-            else if (list.ListType == NbtTagType.List)
-            {
-                for (int i = 0; i < list.Count; i++)
-                {
+            } else if (list.ListType == NbtTagType.List) {
+                for (int i = 0; i < list.Count; i++) {
                     UnsortListChildren((NbtList)list[i], (NbtList)reference[i]);
                 }
             }
         }
 
-        private void UnsortRoot(List<NbtTag> order)
-        {
+        private void UnsortRoot(List<NbtTag> order) {
             Clear();
             TrustedAddRange(order);
         }
 
-        private static void SortListChildren(NbtList list, IComparer<NbtTag> sorter)
-        {
-            if (list.ListType == NbtTagType.Compound)
-            {
-                foreach (NbtCompound item in list.Tags)
-                {
+        private static void SortListChildren(NbtList list, IComparer<NbtTag> sorter) {
+            if (list.ListType == NbtTagType.Compound) {
+                foreach (NbtCompound item in list.Tags) {
                     item.Sort(sorter, true);
                 }
-            }
-            else if (list.ListType == NbtTagType.List)
-            {
-                foreach (NbtList item in list.Tags)
-                {
+            } else if (list.ListType == NbtTagType.List) {
+                foreach (NbtList item in list.Tags) {
                     SortListChildren(item, sorter);
                 }
             }
         }
         #endregion
 
-        internal void RenameTag([NotNull] string oldName, [NotNull] string newName)
-        {
+        internal void RenameTag([NotNull] string oldName, [NotNull] string newName) {
             Debug.Assert(oldName != null);
             Debug.Assert(newName != null);
             Debug.Assert(newName != oldName);
-            if (TagDict.ContainsKey(newName))
-            {
+            if (TagDict.ContainsKey(newName)) {
                 throw new ArgumentException("Cannot rename: a tag with the name already exists in this compound.");
             }
-            if (!TagDict.ContainsKey(oldName))
-            {
+            if (!TagDict.ContainsKey(oldName)) {
                 throw new ArgumentException("Cannot rename: no tag found to rename.");
             }
             var tag = TagDict[oldName];
@@ -270,30 +221,25 @@ namespace fNbt
 
         /// <summary> Gets a collection containing all tag names in this NbtCompound. </summary>
         [NotNull]
-        public IEnumerable<string> Names
-        {
+        public IEnumerable<string> Names {
             get { return TagDict.Keys; }
         }
 
         /// <summary> Gets a collection containing all tags in this NbtCompound. </summary>
         [NotNull]
-        public override IEnumerable<NbtTag> Tags
-        {
+        public override IEnumerable<NbtTag> Tags {
             get { return TagDict.Values; }
         }
 
-        public int IndexOf(string name)
-        {
+        public int IndexOf(string name) {
             return TagDict.IndexOf(name);
         }
 
-        public bool Contains(string name)
-        {
+        public bool Contains(string name) {
             return TagDict.ContainsKey(name);
         }
 
-        public bool Remove(string name)
-        {
+        public bool Remove(string name) {
             if (TagDict.TryGetValue(name, out var result))
                 return this.Remove(result);
             return false;
@@ -301,10 +247,8 @@ namespace fNbt
 
         #region Reading / Writing
 
-        internal static NbtTag CreateTag(NbtTagType type)
-        {
-            switch (type)
-            {
+        internal static NbtTag CreateTag(NbtTagType type) {
+            switch (type) {
                 case NbtTagType.Byte:
                     return new NbtByte();
                 case NbtTagType.Short:
@@ -334,16 +278,13 @@ namespace fNbt
             }
         }
 
-        internal override bool ReadTag(NbtBinaryReader readStream)
-        {
-            if (Parent != null && readStream.Selector != null && !readStream.Selector(this))
-            {
+        internal override bool ReadTag(NbtBinaryReader readStream) {
+            if (Parent != null && readStream.Selector != null && !readStream.Selector(this)) {
                 SkipTag(readStream);
                 return false;
             }
 
-            while (true)
-            {
+            while (true) {
                 NbtTagType nextTag = readStream.ReadTagType();
                 if (nextTag == NbtTagType.End)
                     return true;
@@ -351,8 +292,7 @@ namespace fNbt
                 NbtTag newTag = CreateTag(nextTag);
                 newTag.Parent = this;
                 newTag.name = readStream.ReadString();
-                if (newTag.ReadTag(readStream))
-                {
+                if (newTag.ReadTag(readStream)) {
                     // ReSharper disable AssignNullToNotNullAttribute
                     // newTag.Name is never null
                     TagDict.Add(newTag.Name, newTag);
@@ -362,14 +302,11 @@ namespace fNbt
         }
 
 
-        internal override void SkipTag(NbtBinaryReader readStream)
-        {
-            while (true)
-            {
+        internal override void SkipTag(NbtBinaryReader readStream) {
+            while (true) {
                 NbtTagType nextTag = readStream.ReadTagType();
                 NbtTag newTag;
-                switch (nextTag)
-                {
+                switch (nextTag) {
                     case NbtTagType.End:
                         return;
 
@@ -430,8 +367,7 @@ namespace fNbt
         }
 
 
-        internal override void WriteTag(NbtBinaryWriter writeStream)
-        {
+        internal override void WriteTag(NbtBinaryWriter writeStream) {
             writeStream.Write(NbtTagType.Compound);
             if (Name == null) throw new NbtFormatException("Name is null");
             writeStream.Write(Name);
@@ -439,10 +375,8 @@ namespace fNbt
         }
 
 
-        internal override void WriteData(NbtBinaryWriter writeStream)
-        {
-            foreach (NbtTag tag in TagDict.Values)
-            {
+        internal override void WriteData(NbtBinaryWriter writeStream) {
+            foreach (NbtTag tag in TagDict.Values) {
                 tag.WriteTag(writeStream);
             }
             writeStream.Write(NbtTagType.End);
@@ -452,24 +386,22 @@ namespace fNbt
 
 
         #region container implementation
-        public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason)
-        {
+        public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason) {
             bool first = base.CanAdd(tags, out reason);
             if (!first)
                 return first;
 
-            if (tags.Any(x => x.Name is null))
-            {
+            if (tags.Any(x => x.Name is null)) {
                 reason = new ArgumentException("Unnamed tag given. A compound may only contain named tags.");
                 return false;
             }
             return true;
-        }
+        }
+
         public override bool CanAddType(NbtTagType type) => true;
 
         public override int Count => TagDict.Count;
-        public override int IndexOf(NbtTag item)
-        {
+        public override int IndexOf(NbtTag item) {
             if (TagDict.TryGetValue(item.Name, out var result) && result == item)
                 return TagDict.IndexOf(item.Name);
             return -1;
@@ -477,8 +409,7 @@ namespace fNbt
         public override bool Contains(NbtTag item) => IndexOf(item) != -1;
         protected override void DoInsert(int index, NbtTag item) => TagDict.Insert(index, item.Name, item);
         protected override void DoAdd(NbtTag item) => TagDict.Add(item.Name, item);
-        protected override bool DoRemove(NbtTag item)
-        {
+        protected override bool DoRemove(NbtTag item) {
             if (TagDict.TryGetValue(item.Name, out var result) && result == item)
                 return TagDict.Remove(item.Name);
             return false;
@@ -490,8 +421,7 @@ namespace fNbt
         #endregion
 
         /// <inheritdoc />
-        public override object Clone()
-        {
+        public override object Clone() {
             return new NbtCompound(this);
         }
     }
