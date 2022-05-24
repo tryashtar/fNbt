@@ -5,11 +5,9 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 
-namespace fNbt
-{
+namespace fNbt {
     /// <summary> A tag containing a list of unnamed tags, all of the same kind. </summary>
-    public sealed class NbtList : NbtContainerTag
-    {
+    public sealed class NbtList : NbtContainerTag {
         /// <summary> Type of this tag (List). </summary>
         public override NbtTagType TagType => NbtTagType.List;
 
@@ -18,10 +16,8 @@ namespace fNbt
         /// <summary> Gets or sets the tag type of this list. All tags in this NbtTag must be of the same type. </summary>
         /// <exception cref="ArgumentException"> If the given NbtTagType does not match the type of existing list items (for non-empty lists). </exception>
         /// <exception cref="ArgumentOutOfRangeException"> If the given NbtTagType is a recognized tag type. </exception>
-        public NbtTagType ListType
-        {
-            get
-            {
+        public NbtTagType ListType {
+            get {
                 if (TagList.Count == 0)
                     return NbtTagType.End;
                 return TagList[0].TagType;
@@ -42,8 +38,7 @@ namespace fNbt
         /// ListType is inferred from the first tag. List may be empty, but may not be <c>null</c>. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="tags"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> If given tags are of mixed types. </exception>
-        public NbtList([NotNull] IEnumerable<NbtTag> tags) : this(null, tags)
-        {
+        public NbtList([NotNull] IEnumerable<NbtTag> tags) : this(null, tags) {
             // the base constructor will allow null "tags," but we don't want that in this constructor
             if (tags == null) throw new ArgumentNullException(nameof(tags));
         }
@@ -52,8 +47,7 @@ namespace fNbt
         /// <param name="tagName"> Name to assign to this tag. May be <c>null</c>. </param>
         /// <param name="tags"> Collection of tags to insert into the list.
         /// All tags are expected to be of the same type. May be empty or <c>null</c>. </param>
-        public NbtList([CanBeNull] string tagName, [CanBeNull] IEnumerable<NbtTag> tags)
-        {
+        public NbtList([CanBeNull] string tagName, [CanBeNull] IEnumerable<NbtTag> tags) {
             name = tagName;
             if (tags == null) return;
             AddRange(tags);
@@ -63,8 +57,7 @@ namespace fNbt
         /// <summary> Creates a deep copy of given NbtList. </summary>
         /// <param name="other"> An existing NbtList to copy. May not be <c>null</c>. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="other"/> is <c>null</c>. </exception>
-        public NbtList([NotNull] NbtList other)
-        {
+        public NbtList([NotNull] NbtList other) {
             if (other == null) throw new ArgumentNullException("other");
             name = other.name;
             TrustedAddRange(other.TagList.Select(x => (NbtTag)x.Clone()));
@@ -78,10 +71,8 @@ namespace fNbt
         public NbtTag[] ToArray() => TagList.ToArray();
 
         #region Reading / Writing
-        internal override bool ReadTag(NbtBinaryReader readStream)
-        {
-            if (readStream.Selector != null && !readStream.Selector(this))
-            {
+        internal override bool ReadTag(NbtBinaryReader readStream) {
+            if (readStream.Selector != null && !readStream.Selector(this)) {
                 SkipTag(readStream);
                 return false;
             }
@@ -89,16 +80,13 @@ namespace fNbt
             var list_type = readStream.ReadTagType();
 
             int length = readStream.ReadInt32();
-            if (length < 0)
-            {
+            if (length < 0) {
                 throw new NbtFormatException("Negative list size given.");
             }
 
-            for (int i = 0; i < length; i++)
-            {
+            for (int i = 0; i < length; i++) {
                 NbtTag newTag;
-                switch (list_type)
-                {
+                switch (list_type) {
                     case NbtTagType.Byte:
                         newTag = new NbtByte();
                         break;
@@ -140,27 +128,23 @@ namespace fNbt
                         throw new NbtFormatException("Unsupported tag type found in a list: " + ListType);
                 }
                 newTag.Parent = this;
-                if (newTag.ReadTag(readStream))
-                {
+                if (newTag.ReadTag(readStream)) {
                     TagList.Add(newTag);
                 }
             }
             return true;
         }
 
-        internal override void SkipTag(NbtBinaryReader readStream)
-        {
+        internal override void SkipTag(NbtBinaryReader readStream) {
             // read list type, and make sure it's defined
             var list_type = readStream.ReadTagType();
 
             int length = readStream.ReadInt32();
-            if (length < 0)
-            {
+            if (length < 0) {
                 throw new NbtFormatException("Negative list size given.");
             }
 
-            switch (list_type)
-            {
+            switch (list_type) {
                 case NbtTagType.Byte:
                     readStream.Skip(length);
                     break;
@@ -180,10 +164,8 @@ namespace fNbt
                     readStream.Skip(length * sizeof(double));
                     break;
                 default:
-                    for (int i = 0; i < length; i++)
-                    {
-                        switch (list_type)
-                        {
+                    for (int i = 0; i < length; i++) {
+                        switch (list_type) {
                             case NbtTagType.ByteArray:
                                 new NbtByteArray().SkipTag(readStream);
                                 break;
@@ -205,50 +187,64 @@ namespace fNbt
             }
         }
 
-        internal override void WriteTag(NbtBinaryWriter writeStream)
-        {
+        internal override void WriteTag(NbtBinaryWriter writeStream) {
             writeStream.Write(NbtTagType.List);
             if (Name == null) throw new NbtFormatException("Name is null");
             writeStream.Write(Name);
             WriteData(writeStream);
         }
 
-        internal override void WriteData(NbtBinaryWriter writeStream)
-        {
+        internal override void WriteData(NbtBinaryWriter writeStream) {
             writeStream.Write(ListType);
             writeStream.Write(TagList.Count);
-            foreach (NbtTag tag in TagList)
-            {
+            foreach (NbtTag tag in TagList) {
                 tag.WriteData(writeStream);
             }
         }
         #endregion
 
-        #region container implementation
-        public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason)
-        {
-            bool first = base.CanAdd(tags, out reason);
-            if (!first)
-                return first;
-
-            if (tags.Any(x => x.Name is not null))
-            {
-                reason = new ArgumentException("Named tag given. A list may only contain unnamed tags.");
-                return false;
-            }
-            var tag_types = tags.Select(x => x.TagType).Distinct();
-            if (tag_types.Count() > 1)
-            {
-                reason = new ArgumentException("Items must all be the same type");
-                return false;
-            }
-            if (TagList.Count > 0 && tag_types.Single() != ListType)
-            {
-                reason = new ArgumentException($"Items must be of type {ListType}");
-                return false;
-            }
-            return true;
-        }
+        #region container implementation
+
+        public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason) {
+
+            bool first = base.CanAdd(tags, out reason);
+
+            if (!first)
+
+                return first;
+
+
+
+            if (tags.Any(x => x.Name is not null)) {
+
+                reason = new ArgumentException("Named tag given. A list may only contain unnamed tags.");
+
+                return false;
+
+            }
+
+            var tag_types = tags.Select(x => x.TagType).Distinct();
+
+            if (tag_types.Count() > 1) {
+
+                reason = new ArgumentException("Items must all be the same type");
+
+                return false;
+
+            }
+
+            if (TagList.Count > 0 && tag_types.Single() != ListType) {
+
+                reason = new ArgumentException($"Items must be of type {ListType}");
+
+                return false;
+
+            }
+
+            return true;
+
+        }
+
         public override bool CanAddType(NbtTagType type) => TagList.Count == 0 || type == ListType;
 
         public override int Count => TagList.Count;
@@ -265,8 +261,7 @@ namespace fNbt
         #endregion
 
         /// <inheritdoc />
-        public override object Clone()
-        {
+        public override object Clone() {
             return new NbtList(this);
         }
 
