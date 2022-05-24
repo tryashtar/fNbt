@@ -78,10 +78,6 @@ namespace fNbt
                 {
                     throw new ArgumentNullException("value");
                 }
-                else if (value.Name != tagName)
-                {
-                    throw new ArgumentException("Given tag name must match tag's actual name.");
-                }
                 else if (value.Parent != null)
                 {
                     throw new ArgumentException("A tag may only be added to one compound/list at a time.");
@@ -90,8 +86,12 @@ namespace fNbt
                 {
                     throw new ArgumentException("Cannot add tag to itself");
                 }
-                if (TagDict.TryGetValue(tagName, out var existing))
-                    existing.Parent = null;
+                else if (value.Name != tagName)
+                {
+                    if (value.Name == null)
+                        value.Name = tagName;
+                    throw new ArgumentException("Given tag name must match tag's actual name.");
+                }
                 TagDict[tagName] = value;
                 value.Parent = this;
             }
@@ -464,8 +464,7 @@ namespace fNbt
                 return false;
             }
             return true;
-        }
-
+        }
         public override bool CanAddType(NbtTagType type) => true;
 
         public override int Count => TagDict.Count;
