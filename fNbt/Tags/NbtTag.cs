@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using JetBrains.Annotations;
 
 namespace fNbt {
     /// <summary> Base class for different kinds of named binary tags. </summary>
-    public abstract class NbtTag : ICloneable {
+    public abstract class NbtTag : ICloneable
+    {
         /// <summary> Parent compound tag, either NbtList or NbtCompound, if any.
         /// May be <c>null</c> for detached tags. </summary>
         [CanBeNull]
@@ -61,9 +63,12 @@ namespace fNbt {
 
         /// <summary> Returns true if tags of this type have a value attached.
         /// All tags except Compound, List, and End have values. </summary>
-        public bool HasValue {
-            get {
-                switch (TagType) {
+        public bool HasValue
+        {
+            get
+            {
+                switch (TagType)
+                {
                     case NbtTagType.Compound:
                     case NbtTagType.End:
                     case NbtTagType.List:
@@ -80,9 +85,11 @@ namespace fNbt {
         /// Name of tags inside an <c>NbtCompound</c> may not be null. </exception>
         /// <exception cref="ArgumentException"> If this tag resides in an <c>NbtCompound</c>, and a sibling tag with the name already exists. </exception>
         [CanBeNull]
-        public string Name {
+        public string Name
+        {
             get { return name; }
-            set {
+            set
+            {
                 string current_name = name;
                 if (current_name == value)
                     return;
@@ -119,15 +126,21 @@ namespace fNbt {
         /// <summary> Gets the full name of this tag, including all parent tag names, separated by dots. 
         /// Unnamed tags show up as empty strings. </summary>
         [NotNull]
-        public string Path {
-            get {
-                if (Parent == null) {
+        public string Path
+        {
+            get
+            {
+                if (Parent == null)
+                {
                     return Name ?? "";
                 }
                 var parentAsList = Parent as NbtList;
-                if (parentAsList != null) {
+                if (parentAsList != null)
+                {
                     return parentAsList.Path + '[' + parentAsList.IndexOf(this) + ']';
-                } else {
+                }
+                else
+                {
                     return Parent.Path + '.' + Name;
                 }
             }
@@ -151,7 +164,8 @@ namespace fNbt {
         /// <exception cref="InvalidOperationException"> If used on a tag that is not NbtCompound. </exception>
         /// <remarks> ONLY APPLICABLE TO NbtCompound OBJECTS!
         /// Included in NbtTag base class for programmers' convenience, to avoid extra type casts. </remarks>
-        public virtual NbtTag this[string tagName] {
+        public virtual NbtTag this[string tagName]
+        {
             get { throw new InvalidOperationException("String indexers only work on NbtCompound tags."); }
             set { throw new InvalidOperationException("String indexers only work on NbtCompound tags."); }
         }
@@ -165,7 +179,8 @@ namespace fNbt {
         /// <exception cref="InvalidOperationException"> If used on a tag that is not NbtList or NbtCompound. </exception>
         /// <remarks> ONLY APPLICABLE TO NbtList, and NbtCompound OBJECTS!
         /// Included in NbtTag base class for programmers' convenience, to avoid extra type casts. </remarks>
-        public virtual NbtTag this[int tagIndex] {
+        public virtual NbtTag this[int tagIndex]
+        {
             get { throw new InvalidOperationException("Integer indexers only work on container tags."); }
             set { throw new InvalidOperationException("Integer indexers only work on container tags."); }
         }
@@ -173,11 +188,16 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as a byte.
         /// Only supported by NbtByte tags. </summary>
         /// <exception cref="InvalidCastException"> When used on a tag other than NbtByte. </exception>
-        public byte ByteValue {
-            get {
-                if (TagType == NbtTagType.Byte) {
+        public byte ByteValue
+        {
+            get
+            {
+                if (TagType == NbtTagType.Byte)
+                {
                     return ((NbtByte)this).Value;
-                } else {
+                }
+                else
+                {
                     throw new InvalidCastException("Cannot get ByteValue from " + GetCanonicalTagName(TagType));
                 }
             }
@@ -186,9 +206,12 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as a short (16-bit signed integer).
         /// Only supported by NbtByte and NbtShort. </summary>
         /// <exception cref="InvalidCastException"> When used on an unsupported tag. </exception>
-        public short ShortValue {
-            get {
-                switch (TagType) {
+        public short ShortValue
+        {
+            get
+            {
+                switch (TagType)
+                {
                     case NbtTagType.Byte:
                         return ((NbtByte)this).Value;
                     case NbtTagType.Short:
@@ -202,9 +225,12 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as an int (32-bit signed integer).
         /// Only supported by NbtByte, NbtShort, and NbtInt. </summary>
         /// <exception cref="InvalidCastException"> When used on an unsupported tag. </exception>
-        public int IntValue {
-            get {
-                switch (TagType) {
+        public int IntValue
+        {
+            get
+            {
+                switch (TagType)
+                {
                     case NbtTagType.Byte:
                         return ((NbtByte)this).Value;
                     case NbtTagType.Short:
@@ -220,9 +246,12 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as a long (64-bit signed integer).
         /// Only supported by NbtByte, NbtShort, NbtInt, and NbtLong. </summary>
         /// <exception cref="InvalidCastException"> When used on an unsupported tag. </exception>
-        public long LongValue {
-            get {
-                switch (TagType) {
+        public long LongValue
+        {
+            get
+            {
+                switch (TagType)
+                {
                     case NbtTagType.Byte:
                         return ((NbtByte)this).Value;
                     case NbtTagType.Short:
@@ -240,9 +269,12 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as a long (64-bit signed integer).
         /// Only supported by NbtFloat and, with loss of precision, by NbtDouble, NbtByte, NbtShort, NbtInt, and NbtLong. </summary>
         /// <exception cref="InvalidCastException"> When used on an unsupported tag. </exception>
-        public float FloatValue {
-            get {
-                switch (TagType) {
+        public float FloatValue
+        {
+            get
+            {
+                switch (TagType)
+                {
                     case NbtTagType.Byte:
                         return ((NbtByte)this).Value;
                     case NbtTagType.Short:
@@ -264,9 +296,12 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as a long (64-bit signed integer).
         /// Only supported by NbtFloat, NbtDouble, and, with loss of precision, by NbtByte, NbtShort, NbtInt, and NbtLong. </summary>
         /// <exception cref="InvalidCastException"> When used on an unsupported tag. </exception>
-        public double DoubleValue {
-            get {
-                switch (TagType) {
+        public double DoubleValue
+        {
+            get
+            {
+                switch (TagType)
+                {
                     case NbtTagType.Byte:
                         return ((NbtByte)this).Value;
                     case NbtTagType.Short:
@@ -288,11 +323,16 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as a byte array.
         /// Only supported by NbtByteArray tags. </summary>
         /// <exception cref="InvalidCastException"> When used on a tag other than NbtByteArray. </exception>
-        public byte[] ByteArrayValue {
-            get {
-                if (TagType == NbtTagType.ByteArray) {
+        public byte[] ByteArrayValue
+        {
+            get
+            {
+                if (TagType == NbtTagType.ByteArray)
+                {
                     return ((NbtByteArray)this).Value;
-                } else {
+                }
+                else
+                {
                     throw new InvalidCastException("Cannot get ByteArrayValue from " + GetCanonicalTagName(TagType));
                 }
             }
@@ -301,11 +341,16 @@ namespace fNbt {
         /// <summary> Returns the value of this tag, cast as an int array.
         /// Only supported by NbtIntArray tags. </summary>
         /// <exception cref="InvalidCastException"> When used on a tag other than NbtIntArray. </exception>
-        public int[] IntArrayValue {
-            get {
-                if (TagType == NbtTagType.IntArray) {
+        public int[] IntArrayValue
+        {
+            get
+            {
+                if (TagType == NbtTagType.IntArray)
+                {
                     return ((NbtIntArray)this).Value;
-                } else {
+                }
+                else
+                {
                     throw new InvalidCastException("Cannot get IntArrayValue from " + GetCanonicalTagName(TagType));
                 }
             }
@@ -318,9 +363,12 @@ namespace fNbt {
         {
             get
             {
-                if (TagType == NbtTagType.LongArray) {
+                if (TagType == NbtTagType.LongArray)
+                {
                     return ((NbtLongArray)this).Value;
-                } else {
+                }
+                else
+                {
                     throw new InvalidCastException("Cannot get LongArrayValue from " + GetCanonicalTagName(TagType));
                 }
             }
@@ -330,9 +378,12 @@ namespace fNbt {
         /// Returns exact value for NbtString, and stringified (using InvariantCulture) value for NbtByte, NbtDouble, NbtFloat, NbtInt, NbtLong, and NbtShort.
         /// Not supported by NbtCompound, NbtList, NbtByteArray, or NbtIntArray. </summary>
         /// <exception cref="InvalidCastException"> When used on an unsupported tag. </exception>
-        public string StringValue {
-            get {
-                switch (TagType) {
+        public string StringValue
+        {
+            get
+            {
+                switch (TagType)
+                {
                     case NbtTagType.String:
                         return ((NbtString)this).Value;
                     case NbtTagType.Byte:
@@ -362,8 +413,10 @@ namespace fNbt {
         /// <returns> String representing the canonical name of a tag,
         /// or null of given TagType does not have a canonical name (e.g. Unknown). </returns>
         [CanBeNull]
-        public static string GetCanonicalTagName(NbtTagType type) {
-            switch (type) {
+        public static string GetCanonicalTagName(NbtTagType type)
+        {
+            switch (type)
+            {
                 case NbtTagType.Byte:
                     return "TAG_Byte";
                 case NbtTagType.ByteArray:
@@ -399,7 +452,8 @@ namespace fNbt {
         /// <summary> Prints contents of this tag, and any child tags, to a string.
         /// Indents the string using multiples of the given indentation string. </summary>
         /// <returns> A string representing contents of this tag, and all child tags (if any). </returns>
-        public override string ToString() {
+        public override string ToString()
+        {
             return ToString(DefaultIndentString);
         }
 
@@ -408,6 +462,76 @@ namespace fNbt {
         /// <returns> A new NbtTag object that is a deep copy of this instance. </returns>
         public abstract object Clone();
 
+        internal static NbtTag ReadUnknownTag(NbtBinaryReader readStream)
+        {
+            NbtTagType nextTag = readStream.ReadTagType();
+            NbtTag newTag;
+            switch (nextTag)
+            {
+                case NbtTagType.End:
+                    throw new EndOfStreamException();
+
+                //case NbtTagType.Byte:
+                //    newTag = new NbtByte();
+                //    break;
+
+                //case NbtTagType.Short:
+                //    newTag = new NbtShort();
+                //    break;
+
+                //case NbtTagType.Int:
+                //    newTag = new NbtInt();
+                //    break;
+
+                //case NbtTagType.Long:
+                //    newTag = new NbtLong();
+                //    break;
+
+                //case NbtTagType.Float:
+                //    newTag = new NbtFloat();
+                //    break;
+
+                //case NbtTagType.Double:
+                //    newTag = new NbtDouble();
+                //    break;
+
+                //case NbtTagType.ByteArray:
+                //    newTag = new NbtByteArray();
+                //    break;
+
+                //case NbtTagType.String:
+                //    newTag = new NbtString();
+                //    break;
+
+                case NbtTagType.List:
+                    newTag = new NbtList();
+                    break;
+
+                case NbtTagType.Compound:
+                    newTag = new NbtCompound();
+                    break;
+
+                //case NbtTagType.IntArray:
+                //    newTag = new NbtIntArray();
+                //    break;
+
+                //case NbtTagType.LongArray:
+                //    newTag = new NbtLongArray();
+                //    break;
+
+                default:
+                    throw new NbtFormatException("Unsupported tag type found in NBT_Tag: " + nextTag);
+            }
+
+            newTag.Name = readStream.ReadString();
+            if (newTag.ReadTag(readStream))
+            {
+                return newTag;
+            }
+
+            throw new NbtFormatException("Given NBT stream does not start with a proper TAG");
+        }
+
 
         /// <summary> Prints contents of this tag, and any child tags, to a string.
         /// Indents the string using multiples of the given indentation string. </summary>
@@ -415,7 +539,8 @@ namespace fNbt {
         /// <returns> A string representing contents of this tag, and all child tags (if any). </returns>
         /// <exception cref="ArgumentNullException"> <paramref name="indentString"/> is <c>null</c>. </exception>
         [NotNull]
-        public string ToString([NotNull] string indentString) {
+        public string ToString([NotNull] string indentString)
+        {
             if (indentString == null) throw new ArgumentNullException("indentString");
             var sb = new StringBuilder();
             PrettyPrint(sb, indentString, 0);
@@ -428,9 +553,11 @@ namespace fNbt {
         /// <summary> String to use for indentation in NbtTag's and NbtFile's ToString() methods by default. </summary>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
         [NotNull]
-        public static string DefaultIndentString {
+        public static string DefaultIndentString
+        {
             get { return defaultIndentString; }
-            set {
+            set
+            {
                 if (value == null) throw new ArgumentNullException("value");
                 defaultIndentString = value;
             }

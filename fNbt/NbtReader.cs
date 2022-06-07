@@ -23,7 +23,7 @@ namespace fNbt {
         /// <exception cref="ArgumentNullException"> <paramref name="stream"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> <paramref name="stream"/> is not readable. </exception>
         public NbtReader([NotNull] Stream stream)
-            : this(stream, true) {}
+            : this(stream, true, false) {}
 
 
         /// <summary> Initializes a new instance of the NbtReader class. </summary>
@@ -31,7 +31,7 @@ namespace fNbt {
         /// <param name="bigEndian"> Whether NBT data is in Big-Endian encoding. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="stream"/> is <c>null</c>. </exception>
         /// <exception cref="ArgumentException"> <paramref name="stream"/> is not readable. </exception>
-        public NbtReader([NotNull] Stream stream, bool bigEndian) {
+        public NbtReader([NotNull] Stream stream, bool bigEndian, bool varInt) {
             if (stream == null) throw new ArgumentNullException("stream");
             SkipEndTags = true;
             CacheTagValues = false;
@@ -43,7 +43,7 @@ namespace fNbt {
                 streamStartOffset = stream.Position;
             }
 
-            reader = new NbtBinaryReader(stream, bigEndian);
+            reader = new NbtBinaryReader(stream, bigEndian, varInt);
         }
 
 
