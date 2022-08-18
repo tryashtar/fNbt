@@ -205,58 +205,51 @@ namespace fNbt {
 
         #region container implementation
 
+        /// <inheritdoc />
         public override bool CanAdd(IEnumerable<NbtTag> tags, out Exception reason) {
 
             bool first = base.CanAdd(tags, out reason);
-
             if (!first)
-
                 return first;
-
-
-
             if (tags.Any(x => x.Name is not null)) {
-
                 reason = new ArgumentException("Named tag given. A list may only contain unnamed tags.");
-
                 return false;
-
             }
-
             var tag_types = tags.Select(x => x.TagType).Distinct();
-
             if (tag_types.Count() > 1) {
-
                 reason = new ArgumentException("Items must all be the same type");
-
                 return false;
-
             }
-
             if (TagList.Count > 0 && tag_types.Single() != ListType) {
-
                 reason = new ArgumentException($"Items must be of type {ListType}");
-
                 return false;
-
             }
-
             return true;
-
         }
 
+        /// <inheritdoc />
         public override bool CanAddType(NbtTagType type) => TagList.Count == 0 || type == ListType;
-
+        /// <inheritdoc />
         public override int Count => TagList.Count;
+        /// <inheritdoc />
         public override IEnumerable<NbtTag> Tags => TagList;
+        /// <inheritdoc />
         public override int IndexOf(NbtTag item) => TagList.IndexOf(item);
+        /// <inheritdoc />
         public override bool Contains(NbtTag item) => TagList.Contains(item);
+        /// <inheritdoc />
         protected override void DoInsert(int index, NbtTag item) => TagList.Insert(index, item);
+        /// <inheritdoc />
         protected override void DoAdd(NbtTag item) => TagList.Add(item);
+        /// <inheritdoc />
         protected override bool DoRemove(NbtTag item) => TagList.Remove(item);
+        /// <inheritdoc />
         protected override NbtTag DoGet(int index) => TagList[index];
+        /// <inheritdoc />
         protected override void DoSet(int index, NbtTag item) => TagList[index] = item;
+        /// <inheritdoc />
         protected override void DoRemoveAt(int index) => TagList.RemoveAt(index);
+        /// <inheritdoc />
         protected override void DoClear() => TagList.Clear();
         #endregion
 

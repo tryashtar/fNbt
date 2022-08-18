@@ -90,6 +90,7 @@ namespace fNbt {
             return new NbtFloat(this);
         }
 
+        /// <inheritdoc />
         public override int CompareToValue(NbtValueTag other)
         {
             if (other is not NbtFloat f)

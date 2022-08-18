@@ -22,7 +22,7 @@ namespace fNbt {
         /// Defaults to AutoDetect. </summary>
         public NbtCompression FileCompression { get; private set; }
 
-        /// <summary> Root tag of this file. Must be a named CompoundTag. Defaults to an empty-named tag. </summary>
+        /// <summary> Root tag of this file. Must be a named tag. Defaults to an empty-named tag. </summary>
         /// <exception cref="ArgumentException"> If given tag is unnamed. </exception>
         [NotNull]
         public NbtTag RootTag {
@@ -34,7 +34,10 @@ namespace fNbt {
             }
         }
 
-        public T GetRootTag<T>() where T : NbtTag => RootTag as T;
+        /// <summary>
+        /// Get the root tag of a specific tag type. Returns null if the root tag is not that type.
+        /// </summary>
+        public T GetRootTag<T>() where T : NbtTag => rootTag as T;
 
         [NotNull]
         NbtTag rootTag;

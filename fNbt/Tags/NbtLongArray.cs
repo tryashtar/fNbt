@@ -145,8 +145,10 @@ namespace fNbt {
             return new NbtLongArray(this);
         }
 
+        /// <inheritdoc />
         public override int Count => Value.Length;
 
+        /// <inheritdoc />
         protected override bool ValueEquals(NbtArrayTag other) {
             if (other is not NbtLongArray l)
                 return false;

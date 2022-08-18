@@ -96,6 +96,7 @@ namespace fNbt {
             return new NbtString(this);
         }
 
+        /// <inheritdoc />
         public override int CompareToValue(NbtValueTag other)
         {
             if (other is not NbtString s)

@@ -8,6 +8,7 @@ using System.Text;
 using JetBrains.Annotations;
 
 namespace fNbt {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     /// <summary> A tag containing a set of other named tags. Order is not guaranteed. </summary>
     public sealed class NbtCompound : NbtContainerTag {
         /// <summary> Type of this tag (Compound). </summary>
@@ -426,4 +427,5 @@ namespace fNbt {
             return new NbtCompound(this);
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

@@ -6,6 +6,7 @@ using System.Text;
 using JetBrains.Annotations;
 
 namespace fNbt {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     /// <summary> Base class for different kinds of named binary tags. </summary>
     public abstract class NbtTag : ICloneable, INotifyPropertyChanged {
         /// <summary> Parent compound tag, either NbtList or NbtCompound, if any.
@@ -338,4 +339,5 @@ namespace fNbt {
             return false;
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
