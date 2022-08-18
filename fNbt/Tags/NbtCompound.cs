@@ -77,12 +77,15 @@ namespace fNbt {
                     throw new ArgumentNullException("tagName");
                 } else if (value == null) {
                     throw new ArgumentNullException("value");
-                } else if (value.Name != tagName) {
-                    throw new ArgumentException("Given tag name must match tag's actual name.");
                 } else if (value.Parent != null) {
                     throw new ArgumentException("A tag may only be added to one compound/list at a time.");
                 } else if (value == this) {
                     throw new ArgumentException("Cannot add tag to itself");
+                } else if (value.Name != tagName) {
+                    if (value.Name == null)
+                        value.Name = tagName;
+                    else
+                        throw new ArgumentException("Given tag name must match tag's actual name.");
                 }
                 tags[tagName] = value;
                 value.Parent = this;
