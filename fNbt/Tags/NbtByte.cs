@@ -32,6 +32,12 @@ namespace fNbt {
             : this(null, value) { }
 
 
+        /// <summary> Creates an unnamed NbtByte tag with the given value. </summary>
+        /// <param name="value"> Value to assign to this tag. </param>
+        public NbtByte(bool value)
+            : this(null, value ? (byte)1 : (byte)0) { }
+
+
         /// <summary> Creates an NbtByte tag with the given name and the default value of 0. </summary>
         /// <param name="tagName"> Name to assign to this tag. May be <c>null</c>. </param>
         public NbtByte([CanBeNull] string tagName)
@@ -44,6 +50,14 @@ namespace fNbt {
         public NbtByte([CanBeNull] string tagName, byte value) {
             name = tagName;
             _Value = value;
+        }
+
+        /// <summary> Creates an NbtByte tag with the given name and value. </summary>
+        /// <param name="tagName"> Name to assign to this tag. May be <c>null</c>. </param>
+        /// <param name="value"> Value to assign to this tag. </param>
+        public NbtByte([CanBeNull] string tagName, bool value) {
+            name = tagName;
+            _Value = value ? (byte)1 : (byte)0;
         }
 
 
