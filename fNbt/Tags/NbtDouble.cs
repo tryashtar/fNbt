@@ -11,8 +11,7 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a double-precision floating point number). </summary>
-        public double Value
-        {
+        public double Value {
             get => _Value;
             set {
                 _Value = value;
@@ -90,11 +89,16 @@ namespace fNbt {
         }
 
         /// <inheritdoc />
-        public override int CompareToValue(NbtValueTag other)
-        {
+        public override int CompareToValue(NbtValueTag other) {
             if (other is not NbtDouble d)
                 return 0;
             return this.Value.CompareTo(d.Value);
+        }
+
+        public override string ToString() {
+            if (this.Name == null)
+                return this.Value.ToString();
+            return $"{this.Name}: {this.Value}";
         }
     }
 }

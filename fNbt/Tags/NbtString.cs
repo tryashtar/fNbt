@@ -97,11 +97,16 @@ namespace fNbt {
         }
 
         /// <inheritdoc />
-        public override int CompareToValue(NbtValueTag other)
-        {
+        public override int CompareToValue(NbtValueTag other) {
             if (other is not NbtString s)
                 return 0;
             return this.Value.CompareTo(s.Value);
+        }
+
+        public override string ToString() {
+            if (this.Name == null)
+                return this.Value;
+            return $"{this.Name}: {this.Value}";
         }
     }
 }

@@ -258,5 +258,11 @@ namespace fNbt {
             return new NbtList(this);
         }
 
+        public override string ToString() {
+            var value = "{" + String.Join(", ", TagList) + "}";
+            if (this.Name == null)
+                return value;
+            return $"{this.Name}: {value}";
+        }
     }
 }

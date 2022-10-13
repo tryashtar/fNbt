@@ -11,8 +11,7 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single signed 64-bit integer). </summary>
-        public long Value
-        {
+        public long Value {
             get => _Value;
             set {
                 _Value = value;
@@ -95,11 +94,16 @@ namespace fNbt {
         }
 
         /// <inheritdoc />
-        public override int CompareToValue(NbtValueTag other)
-        {
+        public override int CompareToValue(NbtValueTag other) {
             if (other is not NbtLong l)
                 return 0;
             return this.Value.CompareTo(l.Value);
+        }
+
+        public override string ToString() {
+            if (this.Name == null)
+                return this.Value.ToString();
+            return $"{this.Name}: {this.Value}";
         }
     }
 }

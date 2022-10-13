@@ -14,8 +14,7 @@ namespace fNbt {
         /// <summary> Value/payload of this tag (an array of signed 32-bit integers). Value is stored as-is and is NOT cloned. May not be <c>null</c>. </summary>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is <c>null</c>. </exception>
         [NotNull]
-        public int[] Value
-        {
+        public int[] Value {
             get => ints;
             set {
                 if (value == null) {
@@ -139,11 +138,17 @@ namespace fNbt {
         public override int Count => Value.Length;
 
         /// <inheritdoc />
-        protected override bool ValueEquals(NbtArrayTag other)
-        {
+        protected override bool ValueEquals(NbtArrayTag other) {
             if (other is not NbtIntArray i)
                 return false;
             return this.Value.SequenceEqual(i.Value);
+        }
+
+        public override string ToString() {
+            var value = "[" + String.Join(", ", this.Value) + "]";
+            if (this.Name == null)
+                return value;
+            return $"{this.Name}: {value}";
         }
     }
 }

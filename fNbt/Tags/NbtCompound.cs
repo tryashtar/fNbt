@@ -426,6 +426,13 @@ namespace fNbt {
         public override object Clone() {
             return new NbtCompound(this);
         }
+
+        public override string ToString() {
+            var value = "{" + String.Join(", ", TagDict.Values) + "}";
+            if (this.Name == null)
+                return value;
+            return $"{this.Name}: {value}";
+        }
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

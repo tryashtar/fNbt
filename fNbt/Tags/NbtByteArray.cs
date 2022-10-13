@@ -142,5 +142,12 @@ namespace fNbt {
                 return false;
             return this.Value.SequenceEqual(b.Value);
         }
+
+        public override string ToString() {
+            var value = "[" + String.Join(", ", this.Value) + "]";
+            if (this.Name == null)
+                return value;
+            return $"{this.Name}: {value}";
+        }
     }
 }

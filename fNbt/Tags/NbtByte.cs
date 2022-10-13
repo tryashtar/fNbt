@@ -11,8 +11,7 @@ namespace fNbt {
         }
 
         /// <summary> Value/payload of this tag (a single byte). </summary>
-        public byte Value
-        {
+        public byte Value {
             get => _Value;
             set {
                 _Value = value;
@@ -105,11 +104,16 @@ namespace fNbt {
         }
 
         /// <inheritdoc />
-        public override int CompareToValue(NbtValueTag other)
-        {
+        public override int CompareToValue(NbtValueTag other) {
             if (other is not NbtByte b)
                 return 0;
             return this.Value.CompareTo(b.Value);
+        }
+
+        public override string ToString() {
+            if (this.Name == null)
+                return this.Value.ToString();
+            return $"{this.Name}: {this.Value}";
         }
     }
 }
